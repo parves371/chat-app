@@ -11,15 +11,25 @@ import {
   Typography,
 } from "@mui/material";
 import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
-import { useInputValidation } from "6pp";
+import { useFileHandler, useInputValidation, useStrongPassword } from "6pp";
 
 import { VisuallyHiddenInpute } from "../components/styles/StyledComponents";
+import { userNameValidation } from "../utils/validators";
 const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
-  const name = useInputValidation("", "name", "required|min:3|max:20");
-  const email = useInputValidation("", "email", "required|email");
-  const password = useInputValidation("", "password", "required|min:6|max:20");
-  const bio = useInputValidation("", "bio", "min:10|max:100");
+  const name = useInputValidation("", userNameValidation);
+  const email = useInputValidation("");
+  const password = useStrongPassword();
+  const bio = useInputValidation("");
+
+  const avater = useFileHandler("single");
+
+  const handleSingIn = (e) => {
+    e.preventDefault();
+  };
+  const handleSingUp = (e) => {
+    e.preventDefault();
+  };
   return (
     <Container
       component={"main"}
@@ -57,6 +67,7 @@ const Login = () => {
                 value={email.value}
                 onChange={email.changeHandler}
               />
+
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -79,6 +90,7 @@ const Login = () => {
                 color="primary"
                 type="submit"
                 fullWidth
+                onSubmit={handleSingIn}
               >
                 Login
               </Button>
@@ -106,6 +118,7 @@ const Login = () => {
                     height: "10rem",
                     objectFit: "contain",
                   }}
+                  src={avater.preview}
                 />
                 <IconButton
                   sx={{
@@ -122,10 +135,24 @@ const Login = () => {
                 >
                   <>
                     <CameraAltIcon />
-                    <VisuallyHiddenInpute type="file" />
+                    <VisuallyHiddenInpute
+                      type="file"
+                      onChange={avater.changeHandler}
+                    />
                   </>
                 </IconButton>
               </Stack>
+              {avater.error && (
+                <Typography
+                  variant="caption"
+                  color="red"
+                  m={"1rem auto"}
+                  display={"block"}
+                  width={"fit-content"}
+                >
+                  {avater.error}
+                </Typography>
+              )}
 
               <TextField
                 variant="outlined"
@@ -138,6 +165,11 @@ const Login = () => {
                 value={name.value}
                 onChange={name.changeHandler}
               />
+              {name.error && (
+                <Typography color={"error"} variant="caption">
+                  {name.error}
+                </Typography>
+              )}
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -176,6 +208,11 @@ const Login = () => {
                 value={password.value}
                 onChange={password.changeHandler}
               />
+              {password.error && (
+                <Typography color={"error"} variant="caption">
+                  {password.error}
+                </Typography>
+              )}
               <Button
                 sx={{
                   marginTop: "1rem",
@@ -184,6 +221,7 @@ const Login = () => {
                 color="primary"
                 type="submit"
                 fullWidth
+                onSubmit={handleSingUp}
               >
                 sign up
               </Button>
