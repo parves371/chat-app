@@ -7,6 +7,7 @@ import ChatList from "../specific/ChatList";
 import { sampleChat } from "../../constants/sampleData";
 
 import { Grid } from "@mui/material";
+import ProfileCard from "../specific/ProfileCard";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
@@ -49,7 +50,7 @@ const AppLayout = () => (WrappedComponent) => {
               bgcolor: "rgba(0,0,0,0.85)",
             }}
           >
-            Third
+            <ProfileCard />
           </Grid>
         </Grid>
 
