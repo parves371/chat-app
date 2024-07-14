@@ -20,7 +20,7 @@ const AppLayout = () => (WrappedComponent) => {
     };
     return (
       <>
-        <Title title="chat app" />
+        <Title title="TalkWave" />
         <Header />
         <Grid container height={"calc(100vh - 4rem)"}>
           <Grid

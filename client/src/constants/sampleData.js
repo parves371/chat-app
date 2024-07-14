@@ -27,3 +27,13 @@ export const sampleUser = [
     _id: "2",
   },
 ];
+export const sampleNotification = [
+  {
+    sender: { name: "Mohamed", avatar: "https://i.pravatar.cc/150?u=1" },
+    _id: "1",
+  },
+  {
+    sender: { name: "Ahmed", avatar: "https://i.pravatar.cc/150?u=2" },
+    _id: "2",
+  },
+];

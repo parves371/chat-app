@@ -26,13 +26,12 @@ const Chatitem = ({
           gap: "1rem",
           alignItems: "center",
           padding: "1rem",
-          justifyContent: "space-between",
           backgroundColor: sameSender ? "black" : "unset",
           color: sameSender ? "white" : "unset",
           position: "relative",
         }}
       >
-        <AvaterCard avater={avatar}/>
+        <AvaterCard avater={avatar} />
         <Stack>
           <Typography>{name}</Typography>
           {newMassageAlert && (
