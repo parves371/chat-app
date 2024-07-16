@@ -37,3 +37,38 @@ export const sampleNotification = [
     _id: "2",
   },
 ];
+
+export const sampleMessage = [
+  {
+    attachments: [
+      {
+        public_id: "kjk",
+        url: "https://i.pravatar.cc/150?u=2",
+      },
+    ],
+    content: "Hello",
+    _id: "1",
+    sender: {
+      _id: "user._id",
+      name: "mohammed ",
+    },
+    chat: "chatId",
+    createdAt: "2024-07-16T00:00:00.000Z",
+  },
+  {
+    attachments: [
+      {
+        public_id: "kjk2",
+        url: "https://i.pravatar.cc/150?u=2",
+      },
+    ],
+    content: "Hello",
+    _id: "2",
+    sender: {
+      _id: "user._id2",
+      name: "parves ",
+    },
+    chat: "chatId",
+    createdAt: "2024-07-16T08:10:00.000Z",
+  },
+];
