@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { Link } from "../styles/StyledComponents";
 import { Box, Stack, Typography } from "@mui/material";
 import AvaterCard from "./AvaterCard";
+import { fileTransform } from "../../lib/features";
 
 const Chatitem = ({
   avatar = [],
@@ -31,7 +32,7 @@ const Chatitem = ({
           position: "relative",
         }}
       >
-        <AvaterCard avater={avatar} />
+        <AvaterCard avater={fileTransform(avatar)} />
         <Stack>
           <Typography>{name}</Typography>
           {newMassageAlert && (

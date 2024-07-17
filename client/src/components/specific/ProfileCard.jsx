@@ -32,7 +32,7 @@ const ProfileCard = () => {
       />
       <Profile
         text={"joined"}
-        heading={momemt("Thu Jan 01 2024 06:00:02 GMT+0600").fromNow()}
+        heading={momemt("2024-01-01T06:00:02+06:00").fromNow()}
         icon={<CalenderIcon />}
       />
     </Stack>

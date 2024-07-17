@@ -43,7 +43,7 @@ export const sampleMessage = [
     attachments: [
       {
         public_id: "kjk",
-        url: "https://i.pravatar.cc/150?u=2",
+        url: "https://picsum.photos/500/320.jpg",
       },
     ],
     content: "Hello",
@@ -59,7 +59,7 @@ export const sampleMessage = [
     attachments: [
       {
         public_id: "kjk2",
-        url: "https://i.pravatar.cc/150?u=2",
+        url: "https://picsum.photos/300/200.jpg",
       },
     ],
     content: "Hello",

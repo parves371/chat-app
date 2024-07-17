@@ -3,6 +3,7 @@ import React, { memo } from "react";
 import { lightBlue } from "../../constants/color";
 import moment from "moment";
 import { fileFormat } from "../../lib/features";
+import RenderContant from "./RenderContant";
 
 const MessageComponent = ({ message, user }) => {
   const { content, attachments = [], sender, createdAt } = message;
@@ -31,15 +32,12 @@ const MessageComponent = ({ message, user }) => {
       {attachments.length > 0 &&
         attachments.map((i, index) => {
           const { public_id, url } = i;
-          const file = fileFormat(url);
+          const file = fileFormat(url, 200);
           return (
             <Box key={index}>
-              <a
-                href=""
-                target="_blank"
-                download
-                style={{ color: "black" }}
-              ></a>
+              <a href={url} target="_blank" download style={{ color: "black" }}>
+                {RenderContant(file, url)}
+              </a>
             </Box>
           );
         })}

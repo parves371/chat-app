@@ -31,7 +31,7 @@ const Chate = () => {
         sx={{ overflowY: "auto", overflowX: "hidden" }}
       >
         {sampleMessage.map((i) => (
-          <MessageComponent message={i} user={user} />
+          <MessageComponent key={i._id} message={i} user={user} />
         ))}
       </Stack>
       <form style={{ height: "10%" }}>

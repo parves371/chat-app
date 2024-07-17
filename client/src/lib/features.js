@@ -13,4 +13,5 @@ const fileFormat = (url = "") => {
   }
 };
 
-export { fileFormat };
+const fileTransform = (url = "", width = 100) => url;
+export { fileFormat, fileTransform };
