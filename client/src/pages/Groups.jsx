@@ -34,7 +34,7 @@ const AddMemberDailog = lazy(() =>
   import("../components/dialogs/AddMemberDailog")
 );
 
-const isAddmember = true;
+const isAddmember = false;
 const Groups = () => {
   const navigate = useNavigate();
   const chatId = useSearchParams()[0].get("group");
