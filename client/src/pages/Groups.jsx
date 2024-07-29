@@ -21,12 +21,13 @@ import {
   KeyboardBackspace as KeyboardBackspaceIcon,
   Menu as MenuIcon,
 } from "@mui/icons-material/";
-import { matblack } from "../constants/color";
+import { bgGradient, matblack } from "../constants/color";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Link } from "../components/styles/StyledComponents";
 
 import AvaterCard from "../components/shared/AvaterCard";
-import { sampleChat } from "../constants/sampleData";
+import { sampleChat, sampleUser } from "../constants/sampleData";
+import UserItem from "../components/shared/UserItem";
 const ConfirmDeleteDialog = lazy(() =>
   import("../components/dialogs/ConfirmDeleteDailog")
 );
@@ -74,12 +75,14 @@ const Groups = () => {
     console.log("delete");
   };
   useEffect(() => {
-    setGroupName("Group Name");
-    setGroupNameUpdate("Group Name");
+    if (chatId) {
+      setGroupName(`Group Name ${chatId}`);
+      setGroupNameUpdate(`"Group Name" ${chatId}`);
+    }
     return () => {
       setGroupName("");
       setGroupNameUpdate("");
-      setIsEdit(false);
+      // setIsEdit(false);
     };
   });
 
@@ -177,13 +180,16 @@ const Groups = () => {
     </Stack>
   );
 
+  const removeMemberHandler = (id) => {};
   return (
     <Grid container height={"100vh"}>
       <Grid
         item
         sm={4}
-        sx={{ display: { xs: "none", sm: "block" } }}
-        bgcolor={"bisque"}
+        sx={{
+          display: { xs: "none", sm: "block" },
+          backgroundImage: bgGradient,
+        }}
       >
         <GroupsList groups={sampleChat} chatId={chatId} />
       </Grid>
@@ -216,11 +222,22 @@ const Groups = () => {
               boxSizing={"border-box"}
               padding={{ xs: "0", sm: "1rem", md: "1rem 4rem" }}
               spacing={"2rem"}
-              bgcolor={"bisque"}
               height={"50vh"}
               overflow={"auto"}
             >
-              {/* members */}
+              {sampleUser.map((i) => (
+                <UserItem
+                  user={i}
+                  key={i._id}
+                  isAdded
+                  styling={{
+                    boxShadow: "0 0  0.5rem rgba(0,0,0,0.2)",
+                    padding: "1rem 2rem",
+                    borderRadius: "1rem",
+                  }}
+                  handler={removeMemberHandler}
+                />
+              ))}
             </Stack>
             {ButtonGroup}
           </>
