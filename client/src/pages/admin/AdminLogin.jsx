@@ -1,20 +1,11 @@
 import React from "react";
-import {
-  Avatar,
-  Button,
-  Container,
-  IconButton,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Container, Paper, TextField, Typography } from "@mui/material";
 import { bgGradient } from "../../constants/color";
 import { useInputValidation } from "6pp";
 import { Navigate } from "react-router-dom";
 
+const isAdmin = true;
 const AdminLogin = () => {
-  const isAdmin = true;
   const secretKey = useInputValidation("");
 
   const submiteHandler = (e) => {

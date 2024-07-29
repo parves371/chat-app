@@ -18,7 +18,7 @@ import {
 } from "@mui/icons-material";
 
 import React, { useState } from "react";
-import { useLocation, Link as LinkComponent } from "react-router-dom";
+import { useLocation, Link as LinkComponent, Navigate } from "react-router-dom";
 import { matblack } from "../../constants/color";
 
 const Link = styled(LinkComponent)`
@@ -34,17 +34,17 @@ const adminTab = [
   { name: "Dashboard", url: "/admin/dashboard", icon: <DashboardIcon /> },
   {
     name: "Users",
-    url: "/admin/user-management",
+    url: "/admin/user",
     icon: <ManageAccountsIcon />,
   },
   {
-    name: "groups",
-    url: "/admin/group-management",
+    name: "chats",
+    url: "/admin/chats",
     icon: <GroupsIcon />,
   },
   {
     name: "messages",
-    url: "/admin/massage-management",
+    url: "/admin/messages",
     icon: <MessageIcon />,
   },
 ];
@@ -86,11 +86,14 @@ const Sidebar = ({ w = "100%" }) => {
   );
 };
 
+const isAdmin = true;
 const AdminLayout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   const handleMobile = () => setIsMobile(!isMobile);
   const handleClose = () => setIsMobile(false);
+
+  if (!isAdmin) return <Navigate to={"/admin"} />;
 
   return (
     <Grid container minHeight={"100vh"}>
