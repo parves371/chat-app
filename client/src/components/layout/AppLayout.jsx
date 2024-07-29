@@ -53,8 +53,6 @@ const AppLayout = () => (WrappedComponent) => {
             <ProfileCard />
           </Grid>
         </Grid>
-
-        <div>footer</div>
       </>
     );
   };
