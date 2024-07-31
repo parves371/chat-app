@@ -72,8 +72,8 @@ const Dashboard = () => {
               maxWidth: "45rem",
             }}
           >
-            <Typography>Last Massages</Typography>
-            <LineCharts />
+            <Typography margin={"2rem 0"} variant="h4">Last Massages</Typography>
+            <LineCharts value={[0, 120, 24, 14, 30]} />
           </Paper>
           <Paper
             elevation={3}
