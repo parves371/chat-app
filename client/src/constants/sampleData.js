@@ -72,3 +72,24 @@ export const sampleMessage = [
     createdAt: "2024-07-16T08:10:00.000Z",
   },
 ];
+
+export const adminDashboardData = {
+  users: [
+    {
+      name: "Mohamed",
+      avatar: "https://i.pravatar.cc/150?u=1",
+      _id: "1",
+      username: "mohammed",
+      friends: 12,
+      groups: 2,
+    },
+    {
+      name: "Ahmed",
+      avatar: "https://i.pravatar.cc/150?u=2",
+      _id: "2",
+      username: "ahmed",
+      friends: 12,
+      groups: 2,
+    },
+  ],
+};
