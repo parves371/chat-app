@@ -11,7 +11,7 @@ const AvaterCard = ({ avater = [], max = 4 }) => {
               <Avatar
                 src={i}
                 alt={`avater ${index}`}
-                key={Math.random() * 100}
+                key={index}
                 sx={{
                   width: "3rem",
                   height: "3rem",

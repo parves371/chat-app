@@ -3,7 +3,7 @@ import AdminLayout from "../../components/layout/AdminLayout";
 import Table from "../../components/shared/Table";
 import { Avatar } from "@mui/material";
 import { adminDashboardData } from "../../constants/sampleData";
-import { fileFormat, fileTransform } from "../../lib/features";
+import { fileTransform } from "../../lib/features";
 
 const columns = [
   {

@@ -77,7 +77,7 @@ export const adminDashboardData = {
   users: [
     {
       name: "Mohamed",
-      avatar: "https://i.pravatar.cc/150?u=1",
+      avatar: "https://i.pravatar.cc/150?u=45",
       _id: "1",
       username: "mohammed",
       friends: 12,
@@ -85,11 +85,45 @@ export const adminDashboardData = {
     },
     {
       name: "Ahmed",
-      avatar: "https://i.pravatar.cc/150?u=2",
+      avatar: "https://i.pravatar.cc/150?u=55",
       _id: "2",
       username: "ahmed",
       friends: 12,
       groups: 2,
+    },
+  ],
+  chats: [
+    {
+      name: "3 Love Bards",
+      avatar: ["https://i.pravatar.cc/150?u=33"],
+      _id: "1",
+      groupChat: false,
+      members: [
+        { _id: "1", avatar: "https://i.pravatar.cc/150?u=33" },
+        { _id: "2", avatar: "https://i.pravatar.cc/150?u=55" },
+      ],
+      totalMembers: 2,
+      totalMessages: 12,
+      creator: {
+        name: "Mohamed",
+        avatar: "https://i.pravatar.cc/150?u=33",
+      },
+    },
+    {
+      name: "4 Love Bards",
+      avatar: ["https://i.pravatar.cc/150?u=55"],
+      _id: "2",
+      groupChat: true,
+      members: [
+        { _id: "1", avatar: "https://i.pravatar.cc/150?u=33" },
+        { _id: "2", avatar: "https://i.pravatar.cc/150?u=55" },
+      ],
+      totalMembers: 2,
+      totalMessages: 12,
+      creator: {
+        name: "Mohamed",
+        avatar: "https://i.pravatar.cc/150?u=55",
+      },
     },
   ],
 };
