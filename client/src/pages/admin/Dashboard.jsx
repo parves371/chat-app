@@ -62,7 +62,13 @@ const Dashboard = () => {
     <AdminLayout>
       <Container component={"main"}>
         {appbar}
-        <Stack direction={"row"} spacing={"2rem"} flexWrap={"wrap"}>
+        <Stack
+          direction={{ xs: "column", lg: "row" }}
+          alignItems={{ xs: "center", lg: "stretch" }}
+          flexWrap={"wrap"}
+          justifyContent={"center"}
+          sx={{ gap: "2rem" }}
+        >
           <Paper
             elevation={3}
             sx={{
@@ -72,7 +78,9 @@ const Dashboard = () => {
               maxWidth: "45rem",
             }}
           >
-            <Typography margin={"2rem 0"} variant="h4">Last Massages</Typography>
+            <Typography margin={"2rem 0"} variant="h4">
+              Last Massages
+            </Typography>
             <LineCharts value={[0, 120, 24, 14, 30]} />
           </Paper>
           <Paper
@@ -87,10 +95,12 @@ const Dashboard = () => {
               position: "relative",
               width: "100%",
               maxWidth: "25rem",
-              height: "25rem",
             }}
           >
-            <DoughnutCharts />
+            <DoughnutCharts
+              labels={["Group Chats", "Single Chats"]}
+              value={[10, 20]}
+            />
             <Stack
               position={"absolute"}
               direction={"row"}

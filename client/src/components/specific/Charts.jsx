@@ -12,7 +12,7 @@ import {
   Legend,
   scales,
 } from "chart.js";
-import { purple, purpleLight } from "../../constants/color";
+import { orange, purple, purpleLight } from "../../constants/color";
 import { getLast7Days } from "../../lib/features";
 
 ChartJS.register(
@@ -64,8 +64,36 @@ const LineCharts = ({ value = [] }) => {
   };
   return <Line data={data} options={LineChartsOption} />;
 };
-const DoughnutCharts = () => {
-  return <div>Charts </div>;
+
+const DoughnutChartsOption = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  cuout: 120,
+};
+const DoughnutCharts = ({ value = [], labels = [] }) => {
+  const data = {
+    labels,
+    datasets: [
+      {
+        data: value,
+        label: "Total Chats vs Group Chats",
+        backgroundColor: [purpleLight, orange],
+        borderColor: [purple, orange],
+        offset: 35,
+      },
+    ],
+  };
+  return (
+    <Doughnut
+      style={{ zIndex: "10" }}
+      data={data}
+      options={DoughnutChartsOption}
+    />
+  );
 };
 
 export { LineCharts, DoughnutCharts };
