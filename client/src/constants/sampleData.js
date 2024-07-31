@@ -126,4 +126,33 @@ export const adminDashboardData = {
       },
     },
   ],
+  messages: [
+    {
+      attachments: [],
+      content: "Hello",
+      _id: "1",
+      sender: {
+        avatar: "https://i.pravatar.cc/150?u=95",
+        name: "mohammed ",
+      },
+      chat: "chatId",
+      groupChat: false,
+      createdAt: "2024-07-16T00:00:00.000Z",
+    },
+    {
+      attachments: [
+        { public_id: "kjk2", url: "https://picsum.photos/300/200.jpg" },
+        { public_id: "kjk2", url: "https://picsum.photos/300/200.jpg" },
+      ],
+      content: "Hello",
+      _id: "2",
+      sender: {
+        avatar: "https://i.pravatar.cc/150?u=55",
+        name: "parves ",
+      },
+      chat: "chatId",
+      groupChat: true,
+      createdAt: "2024-07-16T08:10:00.000Z",
+    },
+  ],
 };

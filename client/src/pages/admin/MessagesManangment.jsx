@@ -1,5 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
+import Table from "../../components/shared/Table";
+import { fileTransform } from "../../lib/features";
+import moment from "moment";
+import { Avatar, Box, Stack } from "@mui/material";
+import { adminDashboardData } from "../../constants/sampleData";
+import RenderContant from "../../components/shared/RenderContent";
 const columns = [
   {
     field: "id",
@@ -12,13 +18,31 @@ const columns = [
     headerName: "Attachment",
     headerClassName: "table-header",
     width: 200,
-    renderCell: (params) => (
-      <Avatar alt={params.row.name} src={params.row.avatar} />
-    ),
+    renderCell: (params) => {
+      const { attachments } = params.row;
+      return attachments?.length > 0
+        ? attachments.map((i) => {
+            const url = i.url;
+            const file = fileTransform(url);
+            return (
+              <Box>
+                <a
+                  href={url}
+                  download
+                  target="_blank"
+                  style={{ color: "black" }}
+                >
+                  {RenderContant(file, url)}
+                </a>
+              </Box>
+            );
+          })
+        : "No Attachment";
+    },
   },
   {
-    field: "contant",
-    headerName: "Contant",
+    field: "content",
+    headerName: "Content",
     headerClassName: "table-header",
     width: 400,
   },
@@ -28,8 +52,8 @@ const columns = [
     headerClassName: "table-header",
     width: 200,
     renderCell: (params) => (
-      <Stack>
-        <Avatar alt={params.row.sender.name} src={params.row.sender.name} />
+      <Stack direction={"row"} spacing={1} alignItems={"center"}>
+        <Avatar alt={params.row.sender.name} src={params.row.sender.avatar} />
         <span>{params.row.sender.name}</span>
       </Stack>
     ),
@@ -54,9 +78,23 @@ const columns = [
   },
 ];
 const MessagesManangment = () => {
+  const [rows, setRows] = React.useState([]);
+  useEffect(() => {
+    setRows(
+      adminDashboardData.messages.map((i) => ({
+        ...i,
+        id: i._id,
+        sender: {
+          name: i.sender.name,
+          avatar: fileTransform(i.sender.avatar, 50),
+        },
+        createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
+      }))
+    );
+  }, []);
   return (
     <AdminLayout>
-      <h3>massages </h3>
+      <Table heading={"All Messages"} columns={columns} row={rows} />
     </AdminLayout>
   );
 };
