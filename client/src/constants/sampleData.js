@@ -43,7 +43,7 @@ export const sampleMessage = [
     attachments: [
       {
         public_id: "kjk",
-        url: "https://picsum.photos/500/320.jpg",
+        url: "https://picsum.photos/800/320.jpg",
       },
     ],
     content: "Hello",

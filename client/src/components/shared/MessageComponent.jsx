@@ -31,7 +31,7 @@ const MessageComponent = ({ message, user }) => {
       {content && <Typography>{content}</Typography>}
       {attachments.length > 0 &&
         attachments.map((i, index) => {
-          const { public_id, url } = i;
+          const { url } = i;
           const file = fileFormat(url, 200);
           return (
             <Box key={index}>
