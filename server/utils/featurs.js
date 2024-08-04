@@ -11,4 +11,8 @@ const connectDB = (url) => {
     });
 };
 
+const disconnectDB = () => {
+  mongoose.connection.close();
+};
+
 export { connectDB };
