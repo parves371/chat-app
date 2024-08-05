@@ -1,0 +1,4 @@
+const ALERT = "ALERT";
+const FEFETCH_CHATS = "FEFETCH_CHATS";
+
+export { ALERT, FEFETCH_CHATS };

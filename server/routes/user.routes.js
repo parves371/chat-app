@@ -4,6 +4,7 @@ import {
   login,
   logout,
   newUser,
+  searchUser,
 } from "../controlers/user.controlers.js";
 import { singleAvatar } from "../middlewares/multer.middlewares.js";
 import { isAuthenticated } from "../middlewares/auth.js";
@@ -17,5 +18,6 @@ app.post("/new", singleAvatar, newUser);
 app.use(isAuthenticated);
 app.get("/me", getMyProfile);
 app.get("/logout", logout);
+app.get("/search", searchUser);
 
 export default app;
