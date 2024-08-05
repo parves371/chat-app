@@ -33,4 +33,4 @@ const sentToken = (res, user, statusCode, message) => {
   }
 };
 
-export { connectDB, sentToken };
+export { connectDB, sentToken, cookieOptions };

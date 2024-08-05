@@ -1,6 +1,6 @@
 import { compare } from "bcrypt";
 import { User } from "../models/user.models.js";
-import { sentToken } from "../utils/featurs.js";
+import { cookieOptions, sentToken } from "../utils/featurs.js";
 import { tryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
 
@@ -43,5 +43,14 @@ const getMyProfile = tryCatch(async (req, res) => {
     user,
   });
 });
+const logout = tryCatch(async (req, res) => {
+  return res
+    .status(200)
+    .cookie("talkwave-token", "", { ...cookieOptions, maxAge: 0 })
+    .json({
+      success: true,
+      message: "Logged out successfully",
+    });
+});
 
-export { login, newUser, getMyProfile };
+export { login, newUser, getMyProfile, logout };

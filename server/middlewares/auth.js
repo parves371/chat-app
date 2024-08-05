@@ -1,13 +1,13 @@
-import { tryCatch } from "./error.js";
 import jwt from "jsonwebtoken";
+import { ErrorHandler } from "../utils/utility.js";
 
-const isAuthenticated = tryCatch(async (req, res, next) => {
+const isAuthenticated = (req, _, next) => {
   const token = req.cookies["talkwave-token"];
-  if (!token) return next(new Error("Not logged in"), 401);
+  if (!token) return next(new ErrorHandler("Not logged in", 401));
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   req.user = decoded._id;
   next();
-});
+};
 
 export { isAuthenticated };
