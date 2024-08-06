@@ -5,6 +5,7 @@ import { tryCatch } from "../middlewares/error.js";
 
 import { emitEvent } from "../utils/featurs.js";
 import { ErrorHandler } from "../utils/utility.js";
+import { getOtherMembers } from "../lib/helper.js";
 
 const newGroupChat = tryCatch(async (req, res, next) => {
   const { name, members } = req.body;
@@ -30,6 +31,58 @@ const newGroupChat = tryCatch(async (req, res, next) => {
     message: "Group created successfully",
   });
 });
+const getMyChats = tryCatch(async (req, res, next) => {
+  const chats = await Chat.find({ members: { $in: [req.user] } }).populate(
+    "members",
+    "name avatar"
+  );
 
+  const transformedChats = chats.map((chat) => {
+    const { name, groupChat, members, _id } = chat;
 
-export { newGroupChat };
+    const otherMember = getOtherMembers(members, req.user);
+    return {
+      _id,
+      avatar: members
+        ? members.slice(0, 3).map(({ avatar }) => avatar.url)
+        : [otherMember.avatar.url],
+
+      name: groupChat ? name : otherMember.name,
+      groupChat,
+      members: members.reduce((prev, crr) => {
+        if (crr._id?.toString() !== req.user._id?.toString()) {
+          prev.push(crr);
+        }
+        return prev;
+      }, []),
+    };
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: transformedChats,
+  });
+});
+
+const getMyGroups = tryCatch(async (req, res, next) => {
+  const chats = await Chat.find({
+    members: { $in: [req.user] },
+    groupChat: true,
+    creator: req.user,
+  }).populate("members", "name avatar");
+
+  const groups = chats.map(({ members, _id, groupChat, name }) => ({
+    _id,
+    groupChat,
+    name,
+    avatar: members?.slice(0, 3).map(({ avatar }) => avatar.url),
+  }));
+
+  console.log(groups);
+  res.status(200).json({
+    success: true,
+    message: groups,
+  });
+});
+
+export { newGroupChat, getMyChats, getMyGroups };
