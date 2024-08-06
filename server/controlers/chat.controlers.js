@@ -1,4 +1,5 @@
 import { Chat } from "../models/chat.models.js";
+import { User } from "../models/user.models.js";
 
 import { ALERT, FEFETCH_CHATS } from "../constants/event.js";
 import { tryCatch } from "../middlewares/error.js";
@@ -85,4 +86,38 @@ const getMyGroups = tryCatch(async (req, res, next) => {
   });
 });
 
-export { newGroupChat, getMyChats, getMyGroups };
+const addMembers = tryCatch(async (req, res, next) => {
+  const { chatId, members } = req.body;
+
+  const chat = await Chat.findById(chatId);
+  if (!chat) return next(new ErrorHandler("Chat not found"), 404);
+  if (!chat.groupChat)
+    return next(new ErrorHandler("Chat is not a group"), 400);
+  if (!chat.creator.equals(req.user))
+    return next(new ErrorHandler("Unauthorized"), 401);
+
+  const allnewMembersPromise = members.map((i) => User.findById(i, "name"));
+  const allNewMembers = await Promise.all(allnewMembersPromise);
+
+  chat.members.push(...allNewMembers.map((i) => i._id));
+  if (chat.members.length > 25)
+    return next(new ErrorHandler("Max limit reached"), 400);
+
+  await chat.save();
+
+  const allNewUsersName = allNewMembers.map((i) => i.name);
+  emitEvent(
+    req,
+    ALERT,
+    chat.members,
+    `${allNewUsersName} has been added to the  group`
+  );
+
+  emitEvent(req, FEFETCH_CHATS, chat.members);
+  res.status(200).json({
+    success: true,
+    message: "Members added successfully",
+  });
+});
+
+export { newGroupChat, getMyChats, getMyGroups, addMembers };
