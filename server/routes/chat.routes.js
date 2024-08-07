@@ -7,7 +7,9 @@ import {
   leaveGroup,
   newGroupChat,
   removeMember,
+  sendattachment,
 } from "../controlers/chat.controlers.js";
+import { attachmentMulter } from "../middlewares/multer.middlewares.js";
 
 const app = express.Router();
 
@@ -21,7 +23,7 @@ app.put("/remove-member", removeMember);
 app.delete("/leave/:id", leaveGroup);
 
 // send attachments
-app.post("/send-attachment");
+app.post("/send-attachment",attachmentMulter,sendattachment);
 
 // get massages
 // get chat deatails reame delete

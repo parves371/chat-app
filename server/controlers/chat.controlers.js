@@ -1,7 +1,13 @@
 import { Chat } from "../models/chat.models.js";
 import { User } from "../models/user.models.js";
+import { Message } from "../models/massages.model.js";
 
-import { ALERT, FEFETCH_CHATS } from "../constants/event.js";
+import {
+  ALERT,
+  FEFETCH_CHATS,
+  NEW_ATTACHMENT,
+  NEW_MASSAGE,
+} from "../constants/event.js";
 import { tryCatch } from "../middlewares/error.js";
 
 import { emitEvent } from "../utils/featurs.js";
@@ -203,6 +209,47 @@ const leaveGroup = tryCatch(async (req, res, next) => {
   });
 });
 
+const sendattachment = tryCatch(async (req, res, next) => {
+  const { chatId } = req.body;
+  if (!chatId) return next(new ErrorHandler("Please provide chatId"), 400);
+
+  const [chat, me] = await Promise.all([
+    Chat.findById(chatId),
+    User.findById(req.user, "name"),
+  ]);
+  if (!chat) return next(new ErrorHandler("Chat not found"), 404);
+
+  const files = req.files || [];
+  if (files.length === 0) next(new ErrorHandler("Please provide files"), 400);
+
+  // upload files
+  const attachments = [];
+  const messagesForDb = {
+    content: "",
+    attachments,
+    sender: me._id,
+    chatId,
+  };
+  const messagesForRealTime = {
+    ...messagesForDb,
+    sender: { _id: me._id, name: me.name },
+    chatId,
+  };
+
+  const message = await Message.create(messagesForDb);
+
+  emitEvent(req, NEW_ATTACHMENT, chat.members, {
+    massage: massagesForRealTime,
+    chatId,
+  });
+  emitEvent(req, NEW_MASSAGE, chat.members, { chatId });
+
+  res.status(200).json({
+    success: true,
+    message,
+  });
+});
+
 export {
   newGroupChat,
   getMyChats,
@@ -210,4 +257,5 @@ export {
   addMembers,
   removeMember,
   leaveGroup,
+  sendattachment,
 };

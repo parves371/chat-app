@@ -7,15 +7,15 @@ const messageSchema = new Schema(
       ref: "User",
       required: true,
     },
-    chat: {
+    chatId: {
       type: Schema.Types.ObjectId,
       ref: "Chat",
       required: true,
     },
-    contant: {
+    content: {
       type: String,
     },
-    attachment: [
+    attachments: [
       {
         public_id: {
           type: String,
