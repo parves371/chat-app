@@ -78,8 +78,6 @@ const getMyGroups = tryCatch(async (req, res, next) => {
     name,
     avatar: members?.slice(0, 3).map(({ avatar }) => avatar.url),
   }));
-
-  console.log(groups);
   res.status(200).json({
     success: true,
     message: groups,
@@ -89,23 +87,32 @@ const getMyGroups = tryCatch(async (req, res, next) => {
 const addMembers = tryCatch(async (req, res, next) => {
   const { chatId, members } = req.body;
 
+  if (!chatId) return next(new ErrorHandler("Please provide chat id"), 400);
+  if (!members || members.length < 1)
+    return next(new ErrorHandler("Please provide members"), 400);
+
   const chat = await Chat.findById(chatId);
   if (!chat) return next(new ErrorHandler("Chat not found"), 404);
   if (!chat.groupChat)
     return next(new ErrorHandler("Chat is not a group"), 400);
   if (!chat.creator.equals(req.user))
-    return next(new ErrorHandler("Unauthorized"), 401);
+    return next(new ErrorHandler("Unauthorized you can't creact group"), 401);
 
   const allnewMembersPromise = members.map((i) => User.findById(i, "name"));
+  console.log(allnewMembersPromise);
   const allNewMembers = await Promise.all(allnewMembersPromise);
 
-  chat.members.push(...allNewMembers.map((i) => i._id));
+  const uniqueMembers = allNewMembers
+    .filter((i) => !chat.members.includes(i._id.toString()))
+    .map((i) => i._id);
+
+  chat.members.push(...uniqueMembers);
   if (chat.members.length > 25)
-    return next(new ErrorHandler("Max limit reached"), 400);
+    return next(new ErrorHandler("Max limit reached"), 403);
 
   await chat.save();
 
-  const allNewUsersName = allNewMembers.map((i) => i.name);
+  const allNewUsersName = allNewMembers.map((i) => i.name).join(", ");
   emitEvent(
     req,
     ALERT,
