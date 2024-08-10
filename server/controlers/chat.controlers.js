@@ -86,7 +86,7 @@ const getMyGroups = tryCatch(async (req, res, next) => {
   }));
   res.status(200).json({
     success: true,
-    message: groups,
+    groups,
   });
 });
 
@@ -250,6 +250,33 @@ const sendattachment = tryCatch(async (req, res, next) => {
   });
 });
 
+const getChatDetails = tryCatch(async (req, res, next) => {
+  if (req.query.populate === "true") {
+    const chat = await Chat.findById(req.params.id)
+      .populate("members", "name avatar")
+      .lean();
+    if (!chat) return next(new ErrorHandler("Chat not found"), 404);
+
+    chat.members = chat.members?.map(({ _id, name, avatar }) => ({
+      _id,
+      name,
+      avatar: avatar.url,
+    }));
+
+    res.status(200).json({
+      success: true,
+      chat,
+    });
+  } else {
+    const chat = await Chat.findById(req.params.id);
+    if (!chat) return next(new ErrorHandler("Chat not found"), 404);
+
+    res.status(200).json({
+      success: true,
+      chat,
+    });
+  }
+});
 export {
   newGroupChat,
   getMyChats,
@@ -258,4 +285,5 @@ export {
   removeMember,
   leaveGroup,
   sendattachment,
+  getChatDetails,
 };
