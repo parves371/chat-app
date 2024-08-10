@@ -277,6 +277,33 @@ const getChatDetails = tryCatch(async (req, res, next) => {
     });
   }
 });
+
+const renameGroup = tryCatch(async (req, res, next) => {
+  const chatId = req.params.id;
+  const { name } = req.body;
+  if (!chatId) return next(new ErrorHandler("Please provide chatId"), 400);
+  if (!name) return next(new ErrorHandler("Please provide name"), 400);
+
+  const chat = await Chat.findById(chatId);
+  if (!chat) return next(new ErrorHandler("Chat not found"), 404);
+  if (!chat.groupChat)
+    return next(new ErrorHandler("Chat is not a group"), 400);
+  if (chat.creator.toString() !== req.user.toString())
+    return next(
+      new ErrorHandler("Unauthorized you can't rename this group"),
+      401
+    );
+
+  chat.name = name;
+  await chat.save();
+
+  emitEvent(req, FEFETCH_CHATS, chat.members);
+
+  res.status(200).json({
+    success: true,
+    message: "Chat renamed successfully",
+  });
+});
 export {
   newGroupChat,
   getMyChats,
@@ -286,4 +313,5 @@ export {
   leaveGroup,
   sendattachment,
   getChatDetails,
+  renameGroup,
 };
