@@ -357,6 +357,33 @@ const deleteChat = tryCatch(async (req, res, next) => {
   });
 });
 
+const getMessages = tryCatch(async (req, res, next) => {
+  const chatId = req.params.id;
+  if (!chatId) return next(new ErrorHandler("Please provide chatId", 400));
+
+  const { page = 1 } = req.query;
+  const limit = 20;
+  const skip = (page - 1) * limit;
+
+  const [messages, totalMessagesCount] = await Promise.all([
+    Message.find({ chatId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("sender", "name")
+      .lean(),
+    Message.countDocuments({ chatId }),
+  ]);
+
+  const totalPages = Math.ceil(totalMessagesCount / limit);
+
+  res.status(200).json({
+    success: true,
+    messages: messages.reverse(),
+    totalPages,
+  });
+});
+
 export {
   newGroupChat,
   getMyChats,
@@ -368,4 +395,5 @@ export {
   getChatDetails,
   renameGroup,
   deleteChat,
+  getMessages,
 };
