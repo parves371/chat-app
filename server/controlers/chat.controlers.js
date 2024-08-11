@@ -16,7 +16,6 @@ import { getOtherMembers } from "../lib/helper.js";
 
 const newGroupChat = tryCatch(async (req, res, next) => {
   const { name, members } = req.body;
-  if (!name) return next(new ErrorHandler("Please fill name of group", 400));
 
   if (members.length < 2)
     return next(new ErrorHandler("Please add atleast 2 members", 400));
@@ -93,10 +92,6 @@ const getMyGroups = tryCatch(async (req, res, next) => {
 const addMembers = tryCatch(async (req, res, next) => {
   const { chatId, members } = req.body;
 
-  if (!chatId) return next(new ErrorHandler("Please provide chatId", 400));
-  if (!members || members.length < 1)
-    return next(new ErrorHandler("Please provide members", 400));
-
   const chat = await Chat.findById(chatId);
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
   if (!chat.groupChat)
@@ -134,8 +129,6 @@ const addMembers = tryCatch(async (req, res, next) => {
 
 const removeMember = tryCatch(async (req, res, next) => {
   const { chatId, userId } = req.body;
-  if (!chatId) return next(new ErrorHandler("Please provide chatId", 400));
-  if (!userId) return next(new ErrorHandler("Please provide userId", 400));
 
   const [chat, userThatWillBeRemove] = await Promise.all([
     Chat.findById(chatId),
@@ -176,7 +169,6 @@ const removeMember = tryCatch(async (req, res, next) => {
 
 const leaveGroup = tryCatch(async (req, res, next) => {
   const chatId = req.params.id;
-  if (!chatId) return next(new ErrorHandler("Please provide chat id", 400));
 
   const chat = await Chat.findById(chatId);
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
@@ -213,7 +205,6 @@ const leaveGroup = tryCatch(async (req, res, next) => {
 
 const sendattachment = tryCatch(async (req, res, next) => {
   const { chatId } = req.body;
-  if (!chatId) return next(new ErrorHandler("Please provide chatId", 400));
 
   const [chat, me] = await Promise.all([
     Chat.findById(chatId),
@@ -222,7 +213,6 @@ const sendattachment = tryCatch(async (req, res, next) => {
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
 
   const files = req.files || [];
-  if (files.length === 0) next(new ErrorHandler("Please provide files", 400));
 
   // upload files
   const attachments = [];
@@ -283,8 +273,6 @@ const getChatDetails = tryCatch(async (req, res, next) => {
 const renameGroup = tryCatch(async (req, res, next) => {
   const chatId = req.params.id;
   const { name } = req.body;
-  if (!chatId) return next(new ErrorHandler("Please provide chatId", 400));
-  if (!name) return next(new ErrorHandler("Please provide name", 400));
 
   const chat = await Chat.findById(chatId);
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
@@ -309,7 +297,6 @@ const renameGroup = tryCatch(async (req, res, next) => {
 
 const deleteChat = tryCatch(async (req, res, next) => {
   const chatId = req.params.id;
-  if (!chatId) return next(new ErrorHandler("Please provide chatId", 400));
 
   const chat = await Chat.findById(chatId);
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
@@ -359,9 +346,8 @@ const deleteChat = tryCatch(async (req, res, next) => {
 
 const getMessages = tryCatch(async (req, res, next) => {
   const chatId = req.params.id;
-  if (!chatId) return next(new ErrorHandler("Please provide chatId", 400));
-
   const { page = 1 } = req.query;
+
   const limit = 20;
   const skip = (page - 1) * limit;
 
