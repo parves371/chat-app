@@ -324,7 +324,7 @@ const deleteChat = tryCatch(async (req, res, next) => {
   }
 
   // Private chat: Only members can delete the chat
-  if (!chat.groupChat && !chat.members.includes(req.user._id.toString())) {
+  if (!chat.groupChat && !chat.members.includes(req.user.toString())) {
     return next(
       new ErrorHandler("Unauthorized: You can't delete this chat", 403)
     );
