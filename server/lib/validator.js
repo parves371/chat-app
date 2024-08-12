@@ -11,7 +11,6 @@ const validate = (req, res, next) => {
   if (!errors.isEmpty()) return next(new ErrorHandler(errorMesssages));
   next();
 };
-// users vaildatiors
 const registerValidator = () => [
   body("name", "Please enter your name").notEmpty(),
   body("username", "Please enter your username").notEmpty(),
@@ -71,6 +70,19 @@ const deleteChatValidator = () => [
   param("id", "Please enter your chatId").notEmpty(),
 ];
 
+const sendFriendRequestValidator = () => [
+  body("userId", "Please enter your userId").notEmpty(),
+];
+
+const acceptFriendRequestValidator = () => [
+  body("requestId", "Please enter your requestId").notEmpty(),
+  body("accept")
+    .notEmpty()
+    .withMessage("Please add accept")
+    .isBoolean()
+    .withMessage("accept must be a boolean"),
+];
+
 export {
   registerValidator,
   validate,
@@ -84,4 +96,6 @@ export {
   getChatDetailsValidator,
   renameGroupValidator,
   deleteChatValidator,
+  sendFriendRequestValidator,
+  acceptFriendRequestValidator,
 };

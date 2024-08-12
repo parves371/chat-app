@@ -1,9 +1,12 @@
-import { compare } from "bcrypt";
+import { Chat } from "../models/chat.models.js";
 import { User } from "../models/user.models.js";
-import { cookieOptions, sentToken } from "../utils/featurs.js";
+import { Request } from "../models/request.models.js";
+
+import { compare } from "bcrypt";
+import { cookieOptions, emitEvent, sentToken } from "../utils/featurs.js";
 import { tryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
-import { Chat } from "../models/chat.models.js";
+import { FEFETCH_CHATS, NEW_REQUEST } from "../constants/event.js";
 
 // create new user and save to database and save in cookies
 const newUser = tryCatch(async (req, res) => {
@@ -78,11 +81,113 @@ const searchUser = tryCatch(async (req, res) => {
     _id: { $nin: allUsersFromMychat },
     name: { $regex: name, $options: "i" },
   });
+  // modified all the users to return only name, id and avatar
+  const users = allUsersExceptMeAndMyFriends.map(({ name, _id, avatar }) => ({
+    name,
+    _id,
+    avatar: avatar.url,
+  }));
 
   res.status(200).json({
     success: true,
-    allUsersExceptMeAndMyFriends,
+    users,
   });
 });
 
-export { login, newUser, getMyProfile, logout, searchUser };
+const sendRequest = tryCatch(async (req, res, next) => {
+  const { userId } = req.body;
+
+  const request = await Request.findOne({
+    $or: [
+      { sender: req.user, receiver: userId },
+      { sender: userId, receiver: req.user },
+    ],
+  });
+  if (request) return next(new ErrorHandler("Request already sent", 400));
+
+  await Request.create({
+    sender: req.user,
+    receiver: userId,
+  });
+  emitEvent(req, NEW_REQUEST, [userId]);
+
+  res.status(200).json({
+    success: true,
+    message: "Request sent successfully",
+  });
+});
+
+const acceptFriendRequest = tryCatch(async (req, res, next) => {
+  const { requestId, accept } = req.body;
+
+  const request = await Request.findById(requestId)
+    .populate("sender", "name")
+    .populate("receiver", "name");
+
+  if (!request) return next(new ErrorHandler("Request not found", 404));
+
+  // Ensure the logged-in user is the receiver of the request
+  if (request.receiver._id.toString() !== req.user.toString())
+    return next(new ErrorHandler("You are not authorized to accept this request", 403));
+
+  if (!accept) {
+    // If the request is rejected, delete it and respond
+    await request.deleteOne();
+    return res.status(200).json({
+      success: true,
+      message: "Request rejected successfully",
+    });
+  }
+
+  // If the request is accepted, create a chat and delete the request
+  const members = [request.sender._id, request.receiver._id];
+
+  await Promise.all([
+    Chat.create({
+      name: `${request.sender.name} and ${request.receiver.name}`,
+      members,
+    }),
+    request.deleteOne(),
+  ]);
+
+  emitEvent(req, FEFETCH_CHATS, members);
+
+  res.status(200).json({
+    success: true,
+    message: "Request accepted successfully",
+    senderId: request.sender._id,
+  });
+});
+
+
+const getMyNotifications = tryCatch(async (req, res) => {
+  const requests = await Request.find({ receiver: req.user }).populate(
+    "sender",
+    "name avatar"
+  );
+
+  const allRequests = requests.map(({ sender, _id }) => {
+    return {
+      sender: {
+        name: sender.name,
+        avatar: sender.avatar.url,
+        _id: sender._id,
+      },
+      _id,
+    };
+  });
+  res.status(200).json({
+    success: true,
+    allRequests,
+  });
+});
+export {
+  login,
+  newUser,
+  getMyProfile,
+  logout,
+  searchUser,
+  sendRequest,
+  acceptFriendRequest,
+  getMyNotifications,
+};
