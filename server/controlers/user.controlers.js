@@ -3,6 +3,7 @@ import { User } from "../models/user.models.js";
 import { cookieOptions, sentToken } from "../utils/featurs.js";
 import { tryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
+import { Chat } from "../models/chat.models.js";
 
 // create new user and save to database and save in cookies
 const newUser = tryCatch(async (req, res) => {
@@ -54,11 +55,33 @@ const logout = tryCatch(async (req, res) => {
 });
 
 const searchUser = tryCatch(async (req, res) => {
-  const { name } = req.query;
+  const { name = "" } = req.query;
+  // Find all one-on-one chats involving the current user
+  const myChats = await Chat.find({ groupChat: false, members: req.user._id });
+
+  // Extract all unique user IDs from these chats
+  const allUsersFromMychat = [
+    ...new Set(
+      myChats.flatMap((chat) =>
+        chat.members.filter(
+          (member) => member.toString() !== req.user.toString()
+        )
+      )
+    ),
+  ];
+
+  // Add the current user's ID to the exclusion list
+  allUsersFromMychat.push(req.user);
+
+  // Find all users except the current user and their friends
+  const allUsersExceptMeAndMyFriends = await User.find({
+    _id: { $nin: allUsersFromMychat },
+    name: { $regex: name, $options: "i" },
+  });
 
   res.status(200).json({
     success: true,
-    users: name,
+    allUsersExceptMeAndMyFriends,
   });
 });
 
