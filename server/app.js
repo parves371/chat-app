@@ -6,19 +6,17 @@ import cookieParser from "cookie-parser";
 dotenv.config({
   path: "./.env",
 });
-
+// routes
 import userRoutes from "./routes/user.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
+import amninRoutes from "./routes/admin.routes.js";
 
 const mongoUrI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
 
 // connect to database
 connectDB(mongoUrI);
-// sinlglechat(10);
-// createSamllChat(10);
-// createMessageInAChat("66b89353f479cf8f34b1f592",30)
-
+// create express app
 const app = express();
 
 // using middleware
@@ -27,6 +25,7 @@ app.use(cookieParser());
 // all routes are here
 app.use("/user", userRoutes);
 app.use("/chat", chatRoutes);
+app.use("/admin", amninRoutes);
 
 // home route
 app.get("/", (req, res) => {
