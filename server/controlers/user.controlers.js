@@ -7,6 +7,7 @@ import { cookieOptions, emitEvent, sentToken } from "../utils/featurs.js";
 import { tryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { FEFETCH_CHATS, NEW_REQUEST } from "../constants/event.js";
+import { getOtherMembers } from "../lib/helper.js";
 
 // create new user and save to database and save in cookies
 const newUser = tryCatch(async (req, res) => {
@@ -128,7 +129,9 @@ const acceptFriendRequest = tryCatch(async (req, res, next) => {
 
   // Ensure the logged-in user is the receiver of the request
   if (request.receiver._id.toString() !== req.user.toString())
-    return next(new ErrorHandler("You are not authorized to accept this request", 403));
+    return next(
+      new ErrorHandler("You are not authorized to accept this request", 403)
+    );
 
   if (!accept) {
     // If the request is rejected, delete it and respond
@@ -159,7 +162,6 @@ const acceptFriendRequest = tryCatch(async (req, res, next) => {
   });
 });
 
-
 const getMyNotifications = tryCatch(async (req, res) => {
   const requests = await Request.find({ receiver: req.user }).populate(
     "sender",
@@ -181,6 +183,40 @@ const getMyNotifications = tryCatch(async (req, res) => {
     allRequests,
   });
 });
+
+const getMyFriends = tryCatch(async (req, res) => {
+  const chatId = req.query.chatId;
+  const myChats = await Chat.find({
+    groupChat: false,
+    members: req.user,
+  }).populate("members", "name avatar");
+
+  const myFriends = myChats.map(({ members }) => {
+    const otherUser = getOtherMembers(members, req.user);
+    return {
+      name: otherUser.name,
+      avatar: otherUser.avatar.url,
+      _id: otherUser._id,
+    };
+  });
+
+  if (chatId) {
+    const chat = await Chat.findById(chatId);
+    availableFriends = myFriends.filter(
+      (friend) => !chat.members.includes(friend._id)
+    );
+
+    res.status(200).json({
+      success: true,
+      myFriends: availableFriends,
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      myFriends,
+    });
+  }
+});
 export {
   login,
   newUser,
@@ -190,4 +226,5 @@ export {
   sendRequest,
   acceptFriendRequest,
   getMyNotifications,
+  getMyFriends,
 };
