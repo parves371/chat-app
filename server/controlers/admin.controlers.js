@@ -57,4 +57,31 @@ const getChats = tryCatch(async (req, res) => {
   });
 });
 
-export { allUsers, getChats };
+const getMessages = tryCatch(async (req, res) => {
+  const messages = await Message.find({})
+    .populate("sender", "name avatar")
+    .populate("chatId", "groupChat");
+
+  const transfromMessages = messages.map(
+    ({ content, attachments, _id, chatId, sender, createdAt }) => ({
+      content,
+      attachments,
+      _id,
+      chatId:chatId._id,
+      groupChat: chatId.groupChat,
+      sender: {
+        _id: sender?._id || "Unknown",
+        name: sender?.name || "Unknown",
+        avatar: sender?.avatar.url || "",
+      },
+      createdAt,
+    })
+  );
+
+  res.status(200).json({
+    status: "success",
+    messages:transfromMessages,
+  });
+});
+
+export { allUsers, getChats, getMessages };
