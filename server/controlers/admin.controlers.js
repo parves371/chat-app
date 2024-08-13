@@ -1,5 +1,6 @@
 import { User } from "../models/user.models.js";
 import { Chat } from "../models/chat.models.js";
+import { Message } from "../models/massages.model.js";
 
 import { tryCatch } from "../middlewares/error.js";
 
@@ -23,4 +24,37 @@ const allUsers = tryCatch(async (req, res) => {
   });
 });
 
-export { allUsers };
+const getChats = tryCatch(async (req, res) => {
+  const chats = await Chat.find({})
+    .populate("members", "name avatar")
+    .populate("creator", "name avatar");
+
+  const transformChats = await Promise.all(
+    chats.map(async ({ members, _id, groupChat, name, creator }) => {
+      const totalMessages = await Message.countDocuments({ chatId: _id });
+
+      return {
+        _id,
+        name,
+        groupChat,
+        avatar: members.slice(0, 3).map(({ avatar }) => avatar.url),
+        members: members.map(({ _id, name, avatar }) => ({
+          _id,
+          name,
+          avatar: avatar.url,
+        })),
+        creator: {
+          name: creator?.name || "Unknown",
+          avatar: creator?.avatar.url || "",
+        },
+        totalMessages,
+      };
+    })
+  );
+  res.status(200).json({
+    status: "success",
+    chats: transformChats,
+  });
+});
+
+export { allUsers, getChats };

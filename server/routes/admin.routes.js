@@ -1,5 +1,5 @@
 import express from "express";
-import { allUsers } from "../controlers/admin.controlers.js";
+import { allUsers, getChats } from "../controlers/admin.controlers.js";
 
 const app = express.Router();
 
@@ -9,7 +9,7 @@ app.post("/verify");
 app.get("/logout");
 
 app.get("/get-user", allUsers);
-app.get("/chats");
+app.get("/get-chats", getChats);
 app.get("/messages");
 app.get("/stats");
 
