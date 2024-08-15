@@ -2,6 +2,7 @@ import express from "express";
 import {
   allUsers,
   getChats,
+  getdashboardStats,
   getMessages,
 } from "../controlers/admin.controlers.js";
 
@@ -15,6 +16,6 @@ app.get("/logout");
 app.get("/get-user", allUsers);
 app.get("/get-chats", getChats);
 app.get("/get-messages", getMessages);
-app.get("/stats");
+app.get("/get-stats", getdashboardStats);
 
 export default app;

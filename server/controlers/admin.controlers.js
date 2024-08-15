@@ -67,7 +67,7 @@ const getMessages = tryCatch(async (req, res) => {
       content,
       attachments,
       _id,
-      chatId:chatId._id,
+      chatId: chatId._id,
       groupChat: chatId.groupChat,
       sender: {
         _id: sender?._id || "Unknown",
@@ -80,8 +80,54 @@ const getMessages = tryCatch(async (req, res) => {
 
   res.status(200).json({
     status: "success",
-    messages:transfromMessages,
+    messages: transfromMessages,
   });
 });
 
-export { allUsers, getChats, getMessages };
+const getdashboardStats = tryCatch(async (req, res) => {
+  const [userscount, groupscount, messagecount, totalchatsCount] =
+    await Promise.all([
+      User.countDocuments(),
+      Chat.countDocuments({ groupChat: true }),
+      Message.countDocuments(),
+      Chat.countDocuments(),
+    ]);
+  const today = new Date();
+  const last7Days = new Date(today.setDate(today.getDate() - 7));
+
+  const last7daysMessages = await Message.find({
+    createdAt: { $gte: last7Days },
+  }).select("createdAt");
+
+  const messages = new Array(7).fill(0);
+  const dayInMillis = 1000 * 60 * 60 * 24;
+
+  last7daysMessages.forEach((message) => {
+    const messageDate = message.createdAt.getTime();
+    const today = new Date();
+
+    const indexApprox = (today.getTime() - messageDate) / dayInMillis;
+
+    const index = Math.floor(indexApprox);
+
+    // Ensure the index is within bounds (0 to 6)
+    if (index >= 0 && index < 7) {
+      messages[6 - index]++;
+    }
+  });
+
+  const stats = {
+    userscount,
+    groupscount,
+    messagecount,
+    totalchatsCount,
+    messagesChart: messages,
+  };
+
+  res.status(200).json({
+    status: "success",
+    stats,
+  });
+});
+
+export { allUsers, getChats, getMessages, getdashboardStats };
