@@ -1,6 +1,7 @@
 import express from "express";
 import {
   adminLogin,
+  adminLogout,
   allUsers,
   getChats,
   getdashboardStats,
@@ -13,7 +14,7 @@ const app = express.Router();
 app.get("/");
 
 app.post("/verify", adminLoginValidator(), validate, adminLogin);
-app.get("/logout");
+app.get("/logout", adminLogout);
 
 app.get("/get-user", allUsers);
 app.get("/get-chats", getChats);

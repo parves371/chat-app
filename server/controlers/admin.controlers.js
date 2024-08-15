@@ -27,6 +27,18 @@ const adminLogin = tryCatch(async (req, res, next) => {
       message: "Login admin successful",
     });
 });
+const adminLogout = tryCatch(async (req, res) => {
+  return res
+    .status(200)
+    .cookie("talkwave-admin", "", {
+      ...cookieOptions,
+      maxAge: 0,
+    })
+    .json({
+      success: true,
+      message: "Logout admin successful",
+    });
+});
 const allUsers = tryCatch(async (req, res) => {
   const users = await User.find({});
 
@@ -153,4 +165,11 @@ const getdashboardStats = tryCatch(async (req, res) => {
   });
 });
 
-export { allUsers, getChats, getMessages, getdashboardStats, adminLogin };
+export {
+  allUsers,
+  getChats,
+  getMessages,
+  getdashboardStats,
+  adminLogin,
+  adminLogout,
+};
