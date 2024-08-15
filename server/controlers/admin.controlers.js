@@ -3,7 +3,30 @@ import { Chat } from "../models/chat.models.js";
 import { Message } from "../models/massages.model.js";
 
 import { tryCatch } from "../middlewares/error.js";
+import { ErrorHandler } from "../utils/utility.js";
+import { cookieOptions } from "../utils/featurs.js";
 
+import jwt from "jsonwebtoken";
+
+const adminLogin = tryCatch(async (req, res, next) => {
+  const { secretkey } = req.body;
+  const adminSecretKey = process.env.ADMIN_SECRET_KEY || "123456";
+
+  const ismatched = secretkey === adminSecretKey;
+  if (!ismatched) return next(new ErrorHandler("Invalid credentials", 401));
+
+  const token = jwt.sign(secretkey, process.env.JWT_SECRET);
+  res
+    .status(200)
+    .cookie("talkwave-admin", token, {
+      ...cookieOptions,
+      maxAge: 1000 * 60 * 15,
+    })
+    .json({
+      success: true,
+      message: "Login admin successful",
+    });
+});
 const allUsers = tryCatch(async (req, res) => {
   const users = await User.find({});
 
@@ -130,4 +153,4 @@ const getdashboardStats = tryCatch(async (req, res) => {
   });
 });
 
-export { allUsers, getChats, getMessages, getdashboardStats };
+export { allUsers, getChats, getMessages, getdashboardStats, adminLogin };

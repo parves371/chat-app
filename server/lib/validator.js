@@ -83,6 +83,10 @@ const acceptFriendRequestValidator = () => [
     .withMessage("accept must be a boolean"),
 ];
 
+const adminLoginValidator = () => [
+  body("secretkey", "Please enter your secretkey").notEmpty(),
+];
+
 export {
   registerValidator,
   validate,
@@ -98,4 +102,5 @@ export {
   deleteChatValidator,
   sendFriendRequestValidator,
   acceptFriendRequestValidator,
+  adminLoginValidator,
 };
