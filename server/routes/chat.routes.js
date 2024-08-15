@@ -1,5 +1,4 @@
 import express from "express";
-import { isAuthenticated } from "../middlewares/auth.js";
 import {
   addMembers,
   deleteChat,
@@ -13,7 +12,6 @@ import {
   renameGroup,
   sendattachment,
 } from "../controlers/chat.controlers.js";
-import { attachmentMulter } from "../middlewares/multer.middlewares.js";
 import {
   addMembersValidator,
   deleteChatValidator,
@@ -23,9 +21,10 @@ import {
   newGroupChatValidator,
   removeMemberValidator,
   renameGroupValidator,
-  sendAttachmentValidator,
-  validate,
+  validate
 } from "../lib/validator.js";
+import { isAuthenticated } from "../middlewares/auth.js";
+import { attachmentMulter } from "../middlewares/multer.middlewares.js";
 
 const app = express.Router();
 
@@ -41,8 +40,6 @@ app.delete("/leave/:id", leaveGroupValidator(), validate, leaveGroup);
 // send attachments
 app.post(
   "/send-attachment",
-  sendAttachmentValidator(),
-  validate,
   attachmentMulter,
   sendattachment
 );

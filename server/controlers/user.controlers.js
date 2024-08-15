@@ -12,6 +12,10 @@ import { getOtherMembers } from "../lib/helper.js";
 // create new user and save to database and save in cookies
 const newUser = tryCatch(async (req, res) => {
   const { name, username, password, bio } = req.body;
+
+  const file = req.file;
+  if (!file) return next(new ErrorHandler("Please upload a avatar", 400));
+
   const avatar = {
     url: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
     public_id: "123456",
