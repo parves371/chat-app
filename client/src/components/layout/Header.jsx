@@ -23,12 +23,20 @@ import { useNavigate } from "react-router-dom";
 const SearchDialog = lazy(() => import("../specific/Search"));
 const NotificationsDialog = lazy(() => import("../specific/Notifications"));
 const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
+
+import axio from "axios";
+import { server } from "../../constants/config";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { userNotExists } from "../../redux/reducers/auth";
 const Header = () => {
-  const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
   const [isNotification, setIsNotification] = useState(false);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleMobile = () => {
     setIsMobile((prev) => !prev);
@@ -43,7 +51,17 @@ const Header = () => {
   const openNotification = () => {
     setIsNotification((prev) => !prev);
   };
-  const logoutHandler = () => {};
+  const logoutHandler = async () => {
+    try {
+      const { data } = await axio.get(`${server}/api/v1/user/logout`, {
+        withCredentials: true,
+      });
+      dispatch(userNotExists());
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "something went wrong");
+    }
+  };
   return (
     <>
       <Box sx={{ flexFlow: "1" }} height={"4rem"}>
