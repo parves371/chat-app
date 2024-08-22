@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./utils/featurs.js";
 import { errrorMiddleware } from "./middlewares/error.js";
 import { v4 as uuid } from "uuid";
+import cors from "cors";
 
 import { Server } from "socket.io";
 import { createServer } from "http";
@@ -17,7 +18,6 @@ import amninRoutes from "./routes/admin.routes.js";
 import { NEW_MASSAGE, NEW_MASSAGES } from "./constants/event.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/massages.model.js";
-import { create } from "domain";
 
 const mongoUrI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
@@ -33,10 +33,20 @@ const io = new Server(server, {});
 // using middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+      process.env.FRONTEND_URL,
+    ],
+    credentials: true,
+  })
+);
 // all routes are here
-app.use("/user", userRoutes);
-app.use("/chat", chatRoutes);
-app.use("/admin", amninRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/admin", amninRoutes);
 
 // home route
 app.get("/", (req, res) => {
@@ -44,9 +54,7 @@ app.get("/", (req, res) => {
 });
 
 //  connect to socket.io
-io.use((socket, next) => {
-  
-});
+io.use((socket, next) => {});
 io.on("connection", (socket) => {
   const user = {
     _id: "sjhdshdjk",

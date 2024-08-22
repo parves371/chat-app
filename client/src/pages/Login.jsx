@@ -16,6 +16,13 @@ import { useFileHandler, useInputValidation, useStrongPassword } from "6pp";
 import { VisuallyHiddenInpute } from "../components/styles/StyledComponents";
 import { userNameValidation } from "../utils/validators";
 import { bgGradient } from "../constants/color";
+
+import axios from "axios";
+import { server } from "../constants/config";
+import { useDispatch } from "react-redux";
+import { userExists } from "../redux/reducers/auth";
+import toast from "react-hot-toast";
+
 const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const name = useInputValidation("", userNameValidation);
@@ -25,8 +32,30 @@ const Login = () => {
 
   const avater = useFileHandler("single");
 
-  const handleSingIn = (e) => {
+  const dispatch = useDispatch();
+
+  const handleSingIn = async (e) => {
     e.preventDefault();
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/login`,
+        {
+          username: email.value,
+          password: password.value,
+        },
+        config
+      );
+      dispatch(userExists(true));
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "something went wrong");
+    }
   };
   const handleSingUp = (e) => {
     e.preventDefault();
@@ -79,7 +108,7 @@ const Login = () => {
                   margin="normal"
                   required
                   fullWidth
-                  id="email"
+                  id="password"
                   label="password"
                   name="password"
                   type="password"
@@ -96,7 +125,7 @@ const Login = () => {
                   color="primary"
                   type="submit"
                   fullWidth
-                  onSubmit={handleSingIn}
+                  onClick={handleSingIn}
                 >
                   Login
                 </Button>
@@ -227,7 +256,7 @@ const Login = () => {
                   color="primary"
                   type="submit"
                   fullWidth
-                  onSubmit={handleSingUp}
+                  onClick={handleSingUp}
                 >
                   sign up
                 </Button>
