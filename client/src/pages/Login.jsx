@@ -27,10 +27,11 @@ const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
   const name = useInputValidation("", userNameValidation);
   const email = useInputValidation("");
-  const password = useStrongPassword();
+  // useStrongPassword();
+  const password = useInputValidation("");
   const bio = useInputValidation("");
 
-  const avater = useFileHandler("single");
+  const avatar = useFileHandler("single");
 
   const dispatch = useDispatch();
 
@@ -57,8 +58,33 @@ const Login = () => {
       toast.error(error?.response?.data?.message || "something went wrong");
     }
   };
-  const handleSingUp = (e) => {
+  const handleSingUp = async (e) => {
     e.preventDefault();
+    const fromData = new FormData();
+    fromData.append("avatar", avatar.file);
+    fromData.append("name", name.value);
+    fromData.append("bio", bio.value);
+    fromData.append("username", email.value);
+    fromData.append("password", password.value);
+
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/new`,
+        fromData,
+        config
+      );
+      dispatch(userExists(true));
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "something went wrong");
+    }
   };
   return (
     <div
@@ -153,7 +179,7 @@ const Login = () => {
                       height: "10rem",
                       objectFit: "contain",
                     }}
-                    src={avater.preview}
+                    src={avatar.preview}
                   />
                   <IconButton
                     sx={{
@@ -172,12 +198,12 @@ const Login = () => {
                       <CameraAltIcon />
                       <VisuallyHiddenInpute
                         type="file"
-                        onChange={avater.changeHandler}
+                        onChange={avatar.changeHandler}
                       />
                     </>
                   </IconButton>
                 </Stack>
-                {avater.error && (
+                {avatar.error && (
                   <Typography
                     variant="caption"
                     color="red"
@@ -185,7 +211,7 @@ const Login = () => {
                     display={"block"}
                     width={"fit-content"}
                   >
-                    {avater.error}
+                    {avatar.error}
                   </Typography>
                 )}
 

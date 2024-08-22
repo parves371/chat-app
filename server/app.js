@@ -5,6 +5,7 @@ import { connectDB } from "./utils/featurs.js";
 import { errrorMiddleware } from "./middlewares/error.js";
 import { v4 as uuid } from "uuid";
 import cors from "cors";
+import {v2 as cloudinary} from "cloudinary";
 
 import { Server } from "socket.io";
 import { createServer } from "http";
@@ -25,6 +26,11 @@ const userSocketIDs = new Map();
 
 // connect to database
 connectDB(mongoUrI);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 // create express app
 const app = express();
 const server = createServer(app);

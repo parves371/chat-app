@@ -3,22 +3,28 @@ import { User } from "../models/user.models.js";
 import { Request } from "../models/request.models.js";
 
 import { compare } from "bcrypt";
-import { cookieOptions, emitEvent, sentToken } from "../utils/featurs.js";
+import {
+  cookieOptions,
+  emitEvent,
+  sentToken,
+  uploadFilesToCloudinary,
+} from "../utils/featurs.js";
 import { tryCatch } from "../middlewares/error.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { FEFETCH_CHATS, NEW_REQUEST } from "../constants/event.js";
 import { getOtherMembers } from "../lib/helper.js";
 
 // create new user and save to database and save in cookies
-const newUser = tryCatch(async (req, res) => {
+const newUser = tryCatch(async (req, res,next) => {
   const { name, username, password, bio } = req.body;
 
   const file = req.file;
   if (!file) return next(new ErrorHandler("Please upload a avatar", 400));
+  const result = await uploadFilesToCloudinary([file]);
 
   const avatar = {
-    url: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    public_id: "123456",
+    url: result[0].url,
+    public_id: result[0].public_id,
   };
   const user = await User.create({
     name,

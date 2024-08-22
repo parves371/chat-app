@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
+import { v4 as uuidv4 } from "uuid";
+import { ErrorHandler } from "./utility.js";
+import { getBase64 } from "../lib/helper.js";
 const cookieOptions = {
   maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
   httpOnly: true,
@@ -37,6 +41,33 @@ const emitEvent = (req, event, users, data) => {
   console.log(`emeiting ${event}`);
 };
 
+const uploadFilesToCloudinary = async (files = []) => {
+  const uploadPromises = files.map((file) => {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(
+        getBase64(file),
+        { resource_type: "auto", public_id: uuidv4() },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      );
+    });
+  });
+
+  try {
+    const results = await Promise.all(uploadPromises);
+
+    const formattedResults = results.map((result) => ({
+      url: result.secure_url,
+      public_id: result.public_id,
+    }));
+    return formattedResults;
+  } catch (error) {
+    throw new ErrorHandler("Error uploading files to Cloudinary", error);
+  }
+};
+
 const deleteFilesFromCloudinary = (public_Ids) => {};
 
 export {
@@ -45,4 +76,5 @@ export {
   cookieOptions,
   emitEvent,
   deleteFilesFromCloudinary,
+  uploadFilesToCloudinary,
 };
