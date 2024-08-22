@@ -31,12 +31,16 @@ The project relies on the following key dependencies:
 
 ## Key Thinks I Learned
 
-- how to use `App Layout` for creating a consistent layout across the application.
-- How to use `Protected Route` for securing routes that require authentication.
-- How to use `File Format and Transformation` for handling file uploads and transformations.
-- How to use `Search Params and Location` for handling search parameters and location changes.
-- How to use `React Router` for client-side routing.
-- How to use `MUI` for building responsive and visually appealing user interfaces.
-- How to use `Chart.js` and react-chartjs-2 to create interactive charts and graphs.
-- How to use `React Hooks` for managing component state and side effects.
-- How to use `React Helmet` for managing document head metadata.
+- `App Layout` for creating a consistent layout across the application.
+- `Protected Route` for securing routes that require authentication.
+- `File Format and Transformation` for handling file uploads and transformations.
+- `Search Params and Location` for handling search parameters and location changes.
+- `React Router` for client-side routing.
+- `MUI` for building responsive and visually appealing user interfaces.
+- `Chart.js` and react-chartjs-2 to create interactive charts and graphs.
+- `React Hooks` for managing component state and side effects.
+- `React Helmet` for managing document head metadata.
+- `React Redux-toolkit` for managing application state.
+- `React Hot Toast` for displaying toast notifications.
+- `socket.io-client` for handling real-time communication.
+- `axios` for handling HTTP requests.
