@@ -15,7 +15,7 @@ import { FEFETCH_CHATS, NEW_REQUEST } from "../constants/event.js";
 import { getOtherMembers } from "../lib/helper.js";
 
 // create new user and save to database and save in cookies
-const newUser = tryCatch(async (req, res,next) => {
+const newUser = tryCatch(async (req, res, next) => {
   const { name, username, password, bio } = req.body;
 
   const file = req.file;
@@ -71,7 +71,7 @@ const logout = tryCatch(async (req, res) => {
 const searchUser = tryCatch(async (req, res) => {
   const { name = "" } = req.query;
   // Find all one-on-one chats involving the current user
-  const myChats = await Chat.find({ groupChat: false, members: req.user._id });
+  const myChats = await Chat.find({ groupChat: false, members: req.user });
 
   // Extract all unique user IDs from these chats
   const allUsersFromMychat = [

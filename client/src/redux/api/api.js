@@ -6,7 +6,7 @@ const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${server}/api/v1/`,
   }),
-  tagTypes: ["Chat"],
+  tagTypes: ["Chat", "User"],
   endpoints: (builder) => ({
     myChats: builder.query({
       query: () => ({
@@ -15,9 +15,16 @@ const api = createApi({
       }),
       providesTags: ["Chat"],
     }),
+    searchUser: builder.query({
+      query: (name) => ({
+        url: `user/search?name=${name}`,
+        credentials: "include",
+      }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
 export default api;
 
-export const { useMyChatsQuery } = api;
+export const { useMyChatsQuery, useLazySearchUserQuery } = api;

@@ -5,7 +5,7 @@ const initialState = {
   isAddMember: false,
   isNotification: false,
   isMobileMenuFriend: false,
-  isSreach: false,
+  isSearch: false,
   isFileMenu: false,
   isDeleteMenu: false,
   uploadingLoader: false,
@@ -30,8 +30,8 @@ const miscSlice = createSlice({
     setIsMobileMenuFriend: (state, action) => {
       state.isMobileMenuFriend = action.payload;
     },
-    setIsSreach: (state, action) => {
-      state.isSreach = action.payload;
+    setIsSearch: (state, action) => {
+      state.isSearch = action.payload;
     },
     setIsFileMenu: (state, action) => {
       state.isFileMenu = action.payload;
@@ -54,7 +54,7 @@ export const {
   setIsAddMember,
   setIsNotification,
   setIsMobileMenuFriend,
-  setIsSreach,
+  setIsSearch,
   setIsFileMenu,
   setIsDeleteMenu,
   setUploadingLoader,

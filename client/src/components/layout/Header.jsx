@@ -27,22 +27,22 @@ const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
 import axio from "axios";
 import { server } from "../../constants/config";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userNotExists } from "../../redux/reducers/auth";
-import { setIsMobileMenuFriend } from "../../redux/reducers/misc";
+import { setIsMobileMenuFriend, setIsSearch } from "../../redux/reducers/misc";
 const Header = () => {
-  const [isSearch, setIsSearch] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
   const [isNotification, setIsNotification] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { isSearch } = useSelector((state) => state.misc);
+
   const handleMobile = () => dispatch(setIsMobileMenuFriend(true)); // redux-toolkit
 
-  const openSearchbox = () => {
-    setIsSearch((prev) => !prev);
-  };
+  const openSearchbox = () => dispatch(setIsSearch(true)); // redux-toolkit
+
   const openNewGroup = () => {
     setIsNewGroup((prev) => !prev);
   };
