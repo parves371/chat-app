@@ -29,8 +29,8 @@ import { server } from "../../constants/config";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { userNotExists } from "../../redux/reducers/auth";
+import { setIsMobileMenuFriend } from "../../redux/reducers/misc";
 const Header = () => {
-  const [isMobile, setIsMobile] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
   const [isNotification, setIsNotification] = useState(false);
@@ -38,9 +38,8 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleMobile = () => {
-    setIsMobile((prev) => !prev);
-  };
+  const handleMobile = () => dispatch(setIsMobileMenuFriend(true)); // redux-toolkit
+
   const openSearchbox = () => {
     setIsSearch((prev) => !prev);
   };
