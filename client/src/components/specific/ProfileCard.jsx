@@ -7,10 +7,12 @@ import {
 } from "@mui/icons-material";
 
 import momemt from "moment";
-const ProfileCard = () => {
+import { fileTransform } from "../../lib/features";
+const ProfileCard = ({ user }) => {
   return (
     <Stack spacing={"2rem"} direction={"column"} alignItems={"center"}>
       <Avatar
+        src={fileTransform(user?.avatar?.url)}
         sx={{
           width: 200,
           height: 200,
@@ -19,20 +21,16 @@ const ProfileCard = () => {
           border: "2px solid #fff",
         }}
       />
-      <Profile text={"Bio"} heading={"I am a developer"} />
+      <Profile text={"Bio"} heading={user?.bio} />
       <Profile
         text={"username"}
-        heading={"parves371"}
+        heading={user?.username}
         icon={<UserNameIcon />}
       />
-      <Profile
-        text={"name"}
-        heading={"md Parves Ahmed Shuvo"}
-        icon={<FaceIcon />}
-      />
+      <Profile text={"name"} heading={user?.name} icon={<FaceIcon />} />
       <Profile
         text={"joined"}
-        heading={momemt("2024-01-01T06:00:02+06:00").fromNow()}
+        heading={momemt(user?.createdAt).fromNow()}
         icon={<CalenderIcon />}
       />
     </Stack>

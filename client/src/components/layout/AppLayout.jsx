@@ -22,6 +22,7 @@ const AppLayout = () => (WrappedComponent) => {
     const dispatch = useDispatch();
 
     const { isMobileMenuFriend } = useSelector((state) => state.misc);
+    const { user } = useSelector((state) => state.auth);
 
     //  rtk query
     const { isLoading, data, error, isError, refetch } = useMyChatsQuery("");
@@ -87,7 +88,7 @@ const AppLayout = () => (WrappedComponent) => {
               bgcolor: "rgba(0,0,0,0.85)",
             }}
           >
-            <ProfileCard />
+            <ProfileCard user={user} />
           </Grid>
         </Grid>
       </>

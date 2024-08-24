@@ -1,4 +1,12 @@
 import {
+  Add as AddIcon,
+  Group as GroupIcon,
+  Logout as LogoutIcon,
+  Menu as MenuIcon,
+  NotificationAdd as NotificationIcon,
+  Search as SearchIcon,
+} from "@mui/icons-material";
+import {
   AppBar,
   Backdrop,
   Box,
@@ -9,14 +17,6 @@ import {
 } from "@mui/material";
 import React, { Suspense, lazy, useState } from "react";
 import { orange } from "../../constants/color";
-import {
-  Add as AddIcon,
-  Menu as MenuIcon,
-  Search as SearchIcon,
-  Group as GroupIcon,
-  Logout as LogoutIcon,
-  NotificationAdd as NotificationIcon,
-} from "@mui/icons-material";
 
 import { useNavigate } from "react-router-dom";
 
@@ -25,19 +25,22 @@ const NotificationsDialog = lazy(() => import("../specific/Notifications"));
 const NewGroupsDialog = lazy(() => import("../specific/NewGroups"));
 
 import axio from "axios";
-import { server } from "../../constants/config";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import { server } from "../../constants/config";
 import { userNotExists } from "../../redux/reducers/auth";
-import { setIsMobileMenuFriend, setIsSearch } from "../../redux/reducers/misc";
+import {
+  setIsMobileMenuFriend,
+  setIsNotification,
+  setIsSearch,
+} from "../../redux/reducers/misc";
 const Header = () => {
   const [isNewGroup, setIsNewGroup] = useState(false);
-  const [isNotification, setIsNotification] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isSearch } = useSelector((state) => state.misc);
+  const { isSearch, isNotification } = useSelector((state) => state.misc);
 
   const handleMobile = () => dispatch(setIsMobileMenuFriend(true)); // redux-toolkit
 
@@ -47,9 +50,7 @@ const Header = () => {
     setIsNewGroup((prev) => !prev);
   };
   const navigateToGroup = () => navigate("/groups");
-  const openNotification = () => {
-    setIsNotification((prev) => !prev);
-  };
+  const openNotification = () => dispatch(setIsNotification(true));
   const logoutHandler = async () => {
     try {
       const { data } = await axio.get(`${server}/api/v1/user/logout`, {
