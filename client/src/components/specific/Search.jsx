@@ -8,23 +8,31 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-
-import { useInputValidation } from "6pp";
-
 import UserItem from "../shared/UserItem";
 
+import { useInputValidation } from "6pp";
 import { useDispatch, useSelector } from "react-redux";
-import { useLazySearchUserQuery } from "../../redux/api/api";
+import { useAsyncMutation } from "../../hooks/hook";
+import {
+  useLazySearchUserQuery,
+  useSendFriendRequestMutation,
+} from "../../redux/api/api";
 import { setIsSearch } from "../../redux/reducers/misc";
 
 const Search = () => {
   const dispatch = useDispatch();
   const { isSearch } = useSelector((state) => state.misc); // redux-toolkit
-
+  // rtk query
   const [searchUser] = useLazySearchUserQuery();
+  // custom hook
+  const { executeMutation, isLoading} = useAsyncMutation(
+    useSendFriendRequestMutation
+  );
 
-  const isLoadingSendFriendRequest = false;
-  const addFriendHandler = (id) => {};
+  const isLoadingSendFriendRequest = isLoading;
+  const addFriendHandler = async (id) => {
+    await executeMutation("Sending Friend Request...", { userId: id });
+  };
 
   const [users, setUsers] = useState([]);
   const search = useInputValidation("");
