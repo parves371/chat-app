@@ -5,7 +5,13 @@ import { connectDB } from "./utils/featurs.js";
 import { errrorMiddleware } from "./middlewares/error.js";
 import { v4 as uuid } from "uuid";
 import cors from "cors";
-import {v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
+
+import { NEW_MASSAGE, NEW_MASSAGES } from "./constants/event.js";
+import { getSockets } from "./lib/helper.js";
+import { Message } from "./models/massages.model.js";
+import { corsOpstions } from "./lib/config.js";
+import { isSocketAuthenticated } from "./middlewares/auth.js";
 
 import { Server } from "socket.io";
 import { createServer } from "http";
@@ -16,9 +22,6 @@ dotenv.config({
 import userRoutes from "./routes/user.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 import amninRoutes from "./routes/admin.routes.js";
-import { NEW_MASSAGE, NEW_MASSAGES } from "./constants/event.js";
-import { getSockets } from "./lib/helper.js";
-import { Message } from "./models/massages.model.js";
 
 const mongoUrI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
@@ -34,21 +37,14 @@ cloudinary.config({
 // create express app
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {});
+const io = new Server(server, {
+  cors: corsOpstions,
+});
 
 // using middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:4173",
-      process.env.FRONTEND_URL,
-    ],
-    credentials: true,
-  })
-);
+app.use(cors(corsOpstions));
 // all routes are here
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
@@ -60,12 +56,14 @@ app.get("/", (req, res) => {
 });
 
 //  connect to socket.io
-io.use((socket, next) => {});
+io.use((socket, next) => {
+  cookieParser()(socket.request, socket.request.res, async (err) => {
+    await isSocketAuthenticated(err, socket, next);
+  });
+});
 io.on("connection", (socket) => {
-  const user = {
-    _id: "sjhdshdjk",
-    name: "parves",
-  };
+  const user = socket.user;
+
   userSocketIDs.set(user._id.toString(), socket.id);
   console.log(userSocketIDs);
 
@@ -86,6 +84,7 @@ io.on("connection", (socket) => {
       chatId,
       sender: user._id,
     };
+    console.log("emmiting", realTimeMessage);
     const membersSockets = getSockets(members);
 
     io.to(membersSockets).emit(NEW_MASSAGES, {

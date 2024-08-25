@@ -1,23 +1,23 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
-import Header from "./Header";
 import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
-import { sampleChat } from "../../constants/sampleData";
+import Header from "./Header";
 
 import { Drawer, Grid, Skeleton } from "@mui/material";
-import ProfileCard from "../specific/ProfileCard";
-import { useMyChatsQuery } from "../../redux/api/api";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsMobileMenuFriend } from "../../redux/reducers/misc";
-import toast from "react-hot-toast";
 import { useErrorHook } from "../../hooks/hook";
+import { useMyChatsQuery } from "../../redux/api/api";
+import { setIsMobileMenuFriend } from "../../redux/reducers/misc";
+import { getSocket } from "../../socket";
+import ProfileCard from "../specific/ProfileCard";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
     const chatId = params.chatId;
 
+    const socket = getSocket();
     // redux
     const dispatch = useDispatch();
 
@@ -75,7 +75,7 @@ const AppLayout = () => (WrappedComponent) => {
             )}
           </Grid>
           <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"}>
-            <WrappedComponent {...props} />
+            <WrappedComponent {...props} chatId={chatId} />
           </Grid>
           <Grid
             item

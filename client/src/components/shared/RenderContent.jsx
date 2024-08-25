@@ -3,7 +3,6 @@ import { fileTransform } from "../../lib/features";
 import { FileOpen as FileOpenIcon } from "@mui/icons-material";
 
 const RenderContent = (file, url) => {
-  console.log(file, url);
   switch (file) {
     case "image":
       return (

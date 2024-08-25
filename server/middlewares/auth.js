@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import { ErrorHandler } from "../utils/utility.js";
+import { User } from "../models/user.models.js";
+import { TALK_WAVE_TOKEN } from "../lib/config.js";
 
 const isAuthenticated = (req, _, next) => {
   const token = req.cookies["talkwave-token"];
@@ -22,4 +24,24 @@ const isAdmin = (req, _, next) => {
   next();
 };
 
-export { isAuthenticated, isAdmin };
+const isSocketAuthenticated = async (err, socket, next) => {
+  try {
+    if (err) return next(err);
+
+    const authToken = socket.request.cookies[TALK_WAVE_TOKEN];
+
+    if (!authToken) return next(new ErrorHandler("Not logged in", 401));
+
+    const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded._id);
+    if (!user) return next(new ErrorHandler("User not found", 404));
+
+    socket.user = user;
+    return next();
+  } catch (error) {
+    console.log(error);
+    next(new ErrorHandler("Not logged in", 401));
+  }
+};
+export { isAuthenticated, isAdmin, isSocketAuthenticated };
