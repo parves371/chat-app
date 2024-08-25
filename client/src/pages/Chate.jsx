@@ -1,5 +1,5 @@
 import { IconButton, Skeleton, Stack } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   AttachFile as AttachFileIcon,
@@ -14,20 +14,19 @@ import { NEW_MASSAGES } from "../constants/event";
 import { sampleMessage } from "../constants/sampleData";
 import { useChatDetailsQuery } from "../redux/api/api";
 import { getSocket } from "../socket";
+import { useErrorHook, useSocketEvents } from "../hooks/hook";
 
-const user = {
-  _id: "user._id",
-  name: "najmul",
-};
-
-const Chate = ({ chatId }) => {
+const Chate = ({ chatId, user }) => {
   const containerRef = useRef(null);
 
   const socket = getSocket();
   const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
+  const erros = [{ isError: chatDetails.isError, error: chatDetails.error }];
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(""); //on change event
   const members = chatDetails.data?.chat?.members;
+
+  const [messages, setMessages] = useState([]);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -42,6 +41,16 @@ const Chate = ({ chatId }) => {
     setMessage("");
   };
 
+  const newMessagesHandler = useCallback((data) => {
+    setMessages((prev) => [...prev, data.message]);
+  }, []);
+  const eventArr = {
+    [NEW_MASSAGES]: newMessagesHandler,
+  };
+
+  useSocketEvents(socket, eventArr);
+  useErrorHook(erros); // show error toast
+
   return chatDetails.isLoading ? (
     <Skeleton />
   ) : (
@@ -55,7 +64,7 @@ const Chate = ({ chatId }) => {
         bgcolor={gray}
         sx={{ overflowY: "auto", overflowX: "hidden" }}
       >
-        {sampleMessage.map((i) => (
+        {messages?.map((i) => (
           <MessageComponent key={i._id} message={i} user={user} />
         ))}
       </Stack>

@@ -35,7 +35,7 @@ const useAsyncMutation = (mutationHook) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error?.data?.message || "something went wrong",{
+      toast.error(error?.data?.message || "something went wrong", {
         id: toastId,
       });
     } finally {
@@ -46,4 +46,18 @@ const useAsyncMutation = (mutationHook) => {
   return { executeMutation, isLoading, data };
 };
 
-export { useErrorHook, useAsyncMutation };
+const useSocketEvents = (socket, eventArr) => {
+  useEffect(() => {
+    Object.entries(eventArr).forEach(([eventName, eventHandler]) => {
+      socket.on(eventName, eventHandler);
+    });
+
+    return () => {
+      Object.entries(eventArr).forEach(([eventName, eventHandler]) => {
+        socket.off(eventName, eventHandler);
+      });
+    };
+  }, [socket, eventArr]);
+};
+
+export { useAsyncMutation, useErrorHook, useSocketEvents };
