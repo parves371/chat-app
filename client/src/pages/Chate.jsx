@@ -1,5 +1,5 @@
 import { IconButton, Skeleton, Stack } from "@mui/material";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 
 import {
   AttachFile as AttachFileIcon,
@@ -10,23 +10,39 @@ import AppLayout from "../components/layout/AppLayout";
 import MessageComponent from "../components/shared/MessageComponent";
 import { InputBox } from "../components/styles/StyledComponents";
 import { gray, orange } from "../constants/color";
+
 import { NEW_MASSAGES } from "../constants/event";
-import { sampleMessage } from "../constants/sampleData";
-import { useChatDetailsQuery } from "../redux/api/api";
-import { getSocket } from "../socket";
 import { useErrorHook, useSocketEvents } from "../hooks/hook";
+import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
+import { getSocket } from "../socket";
+import { useInfiniteScrollTop } from "6pp";
 
 const Chate = ({ chatId, user }) => {
   const containerRef = useRef(null);
-
   const socket = getSocket();
-  const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
-  const erros = [{ isError: chatDetails.isError, error: chatDetails.error }];
 
   const [message, setMessage] = useState(""); //on change event
-  const members = chatDetails.data?.chat?.members;
-
   const [messages, setMessages] = useState([]);
+  const [page, setPage] = useState(1);
+
+  const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
+  const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
+
+  const { data: oldMessages, setData: setOldMessages } = useInfiniteScrollTop(
+    containerRef,
+    oldMessagesChunk.data?.totalPages,
+    page,
+    setPage,
+    oldMessagesChunk.data?.messages
+  );
+
+  const erros = [
+    { isError: chatDetails.isError, error: chatDetails.error },
+    { isError: oldMessagesChunk.isError, error: oldMessagesChunk.error },
+  ];
+  console.log(oldMessages);
+
+  const members = chatDetails.data?.chat?.members;
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -42,14 +58,17 @@ const Chate = ({ chatId, user }) => {
   };
 
   const newMessagesHandler = useCallback((data) => {
-    setMessages((prev) => [...prev, data.message]);
+    setMessages((prev) => [...prev, data.message]); // fetch feom servr and user messege store in prev
   }, []);
+
   const eventArr = {
     [NEW_MASSAGES]: newMessagesHandler,
   };
 
   useSocketEvents(socket, eventArr);
   useErrorHook(erros); // show error toast
+
+  const allMessages = [...oldMessages, ...messages];
 
   return chatDetails.isLoading ? (
     <Skeleton />
@@ -64,7 +83,7 @@ const Chate = ({ chatId, user }) => {
         bgcolor={gray}
         sx={{ overflowY: "auto", overflowX: "hidden" }}
       >
-        {messages?.map((i) => (
+        {allMessages?.map((i) => (
           <MessageComponent key={i._id} message={i} user={user} />
         ))}
       </Stack>
