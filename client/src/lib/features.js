@@ -15,7 +15,14 @@ const fileFormat = (url = "") => {
   }
 };
 
-const fileTransform = (url = "", width = 100) => url;
+const fileTransform = (url = "", width = 100) => {
+  // const newUlr = url.replace("upload", `upload/dpr_auto/w_${width}`);
+  // if (typeof url !== "string") {
+  //   console.log("URL is not a string:", url);
+  // }
+  console.log(url);
+  return url;
+};
 
 const getLast7Days = () => {
   const currentDate = moment();

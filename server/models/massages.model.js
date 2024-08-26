@@ -21,7 +21,7 @@ const messageSchema = new Schema(
           type: String,
           required: true,
         },
-        URL: {
+        url: {
           type: String,
           required: true,
         },
@@ -34,4 +34,4 @@ const messageSchema = new Schema(
 );
 
 export const Message =
-  mongoose.models.Massage || model("Message", messageSchema);
+  mongoose.models.Message || model("Message", messageSchema);

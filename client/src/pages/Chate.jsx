@@ -11,23 +11,28 @@ import MessageComponent from "../components/shared/MessageComponent";
 import { InputBox } from "../components/styles/StyledComponents";
 import { gray, orange } from "../constants/color";
 
+import { useInfiniteScrollTop } from "6pp";
+import { useDispatch } from "react-redux";
 import { NEW_MASSAGES } from "../constants/event";
 import { useErrorHook, useSocketEvents } from "../hooks/hook";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
+import { setIsFileMenu } from "../redux/reducers/misc";
 import { getSocket } from "../socket";
-import { useInfiniteScrollTop } from "6pp";
 
 const Chate = ({ chatId, user }) => {
   const containerRef = useRef(null);
   const socket = getSocket();
+  const dispatch = useDispatch();
 
   const [message, setMessage] = useState(""); //on change event
   const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(1);
+  const [fileMenuAnchorEl, setFileMenuAnchorEl] = useState(null);
 
   const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
   const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
 
+  // using custom hook  libary 6pp to handle infinite scroll
   const { data: oldMessages, setData: setOldMessages } = useInfiniteScrollTop(
     containerRef,
     oldMessagesChunk.data?.totalPages,
@@ -40,9 +45,13 @@ const Chate = ({ chatId, user }) => {
     { isError: chatDetails.isError, error: chatDetails.error },
     { isError: oldMessagesChunk.isError, error: oldMessagesChunk.error },
   ];
-  console.log(oldMessages);
 
   const members = chatDetails.data?.chat?.members;
+
+  const handleFileOpen = (e) => {
+    dispatch(setIsFileMenu(true));
+    setFileMenuAnchorEl(e.currentTarget);
+  };
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -58,7 +67,7 @@ const Chate = ({ chatId, user }) => {
   };
 
   const newMessagesHandler = useCallback((data) => {
-    setMessages((prev) => [...prev, data.message]); // fetch feom servr and user messege store in prev
+    setMessages((prev) => [...prev, data.message]); // fetch feom sockets and user messege store in prev
   }, []);
 
   const eventArr = {
@@ -95,7 +104,7 @@ const Chate = ({ chatId, user }) => {
           position={"relative"}
           alignItems={"center"}
         >
-          <IconButton>
+          <IconButton onClick={handleFileOpen}>
             <AttachFileIcon />
           </IconButton>
           <InputBox
@@ -119,7 +128,7 @@ const Chate = ({ chatId, user }) => {
           </IconButton>
         </Stack>
       </form>
-      <FileMenu />
+      <FileMenu anchorEl={fileMenuAnchorEl} chatId={chatId} />
     </>
   );
 };

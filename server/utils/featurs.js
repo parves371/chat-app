@@ -49,19 +49,21 @@ const uploadFilesToCloudinary = async (files = []) => {
         { resource_type: "auto", public_id: uuidv4() },
         (error, result) => {
           if (error) return reject(error);
-          resolve(result);
+          resolve(result.secure_url);
         }
       );
     });
   });
 
   try {
-    const results = await Promise.all(uploadPromises);
+    const urls = await Promise.all(uploadPromises);
 
-    const formattedResults = results.map((result) => ({
-      url: result.secure_url,
-      public_id: result.public_id,
+    // Format the results so each URL is stored individually
+    const formattedResults = urls.map((url) => ({
+      url: url,
+      public_id: uuidv4(), // Generate a unique public_id for each URL
     }));
+
     return formattedResults;
   } catch (error) {
     throw new ErrorHandler("Error uploading files to Cloudinary", error);

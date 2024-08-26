@@ -10,7 +10,11 @@ import {
 } from "../constants/event.js";
 import { tryCatch } from "../middlewares/error.js";
 
-import { deleteFilesFromCloudinary, emitEvent } from "../utils/featurs.js";
+import {
+  deleteFilesFromCloudinary,
+  emitEvent,
+  uploadFilesToCloudinary,
+} from "../utils/featurs.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { getOtherMembers } from "../lib/helper.js";
 
@@ -206,6 +210,7 @@ const leaveGroup = tryCatch(async (req, res, next) => {
 const sendattachment = tryCatch(async (req, res, next) => {
   const { chatId } = req.body;
   const files = req.files || [];
+
   if (!files.length > 1) return next(new ErrorHandler("No files found", 400));
   if (files.length > 5) return next(new ErrorHandler("Max limit reached", 403));
 
@@ -216,13 +221,15 @@ const sendattachment = tryCatch(async (req, res, next) => {
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
 
   // upload files
-  const attachments = [];
+  const attachments = await uploadFilesToCloudinary(files);
+
   const messagesForDb = {
     content: "",
     attachments,
     sender: me._id,
     chatId,
   };
+
   const messagesForRealTime = {
     ...messagesForDb,
     sender: { _id: me._id, name: me.name },
@@ -239,7 +246,7 @@ const sendattachment = tryCatch(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message,
+    message: message,
   });
 });
 
