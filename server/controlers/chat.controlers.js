@@ -7,6 +7,7 @@ import {
   FEFETCH_CHATS,
   NEW_ATTACHMENT,
   NEW_MASSAGE,
+  NEW_MASSAGES,
 } from "../constants/event.js";
 import { tryCatch } from "../middlewares/error.js";
 
@@ -238,10 +239,12 @@ const sendattachment = tryCatch(async (req, res, next) => {
 
   const message = await Message.create(messagesForDb);
 
-  emitEvent(req, NEW_ATTACHMENT, chat.members, {
-    massage: messagesForRealTime,
+  emitEvent(req, NEW_MASSAGES, chat.members, {
+    message: messagesForRealTime,
     chatId,
   });
+
+  // message alert
   emitEvent(req, NEW_MASSAGE, chat.members, { chatId });
 
   res.status(200).json({

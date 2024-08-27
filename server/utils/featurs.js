@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import { v4 as uuidv4 } from "uuid";
 import { ErrorHandler } from "./utility.js";
-import { getBase64 } from "../lib/helper.js";
+import { getBase64, getSockets } from "../lib/helper.js";
 const cookieOptions = {
   maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
   httpOnly: true,
@@ -38,7 +38,11 @@ const sentToken = (res, user, statusCode, message) => {
 };
 
 const emitEvent = (req, event, users, data) => {
-  console.log(`emeiting ${event}`);
+  console.log(data);
+
+  const io = req.app.get("io");
+  const sockets = getSockets(users);
+  io.to(sockets).emit(event, data);
 };
 
 const uploadFilesToCloudinary = async (files = []) => {

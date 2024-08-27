@@ -41,6 +41,7 @@ const io = new Server(server, {
   cors: corsOpstions,
 });
 
+app.set("io", io); // set io to app
 // using middleware
 app.use(express.json());
 app.use(cookieParser());
@@ -84,14 +85,14 @@ io.on("connection", (socket) => {
       chatId,
       sender: user._id,
     };
-    console.log("emmiting", realTimeMessage);
+    // console.log("emmiting", realTimeMessage);
     const membersSockets = getSockets(members);
 
     io.to(membersSockets).emit(NEW_MASSAGES, {
       message: realTimeMessage,
       chatId,
     });
-
+    console.log(NEW_MASSAGES);
     // messages alert
     io.to(membersSockets).emit(NEW_MASSAGE, { chatId });
 

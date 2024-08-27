@@ -20,7 +20,6 @@ const fileTransform = (url = "", width = 100) => {
   // if (typeof url !== "string") {
   //   console.log("URL is not a string:", url);
   // }
-  console.log(url);
   return url;
 };
 
