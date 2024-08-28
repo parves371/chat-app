@@ -1,5 +1,5 @@
 import { IconButton, Skeleton, Stack } from "@mui/material";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   AttachFile as AttachFileIcon,
@@ -18,6 +18,7 @@ import { useErrorHook, useSocketEvents } from "../hooks/hook";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { setIsFileMenu } from "../redux/reducers/misc";
 import { getSocket } from "../socket";
+import { removeNewMessageAlert } from "../redux/reducers/chat";
 
 const Chate = ({ chatId, user }) => {
   const containerRef = useRef(null);
@@ -66,9 +67,22 @@ const Chate = ({ chatId, user }) => {
     setMessage("");
   };
 
-  const newMessagesHandler = useCallback((data) => {
-    setMessages((prev) => [...prev, data.message]); // fetch feom sockets and user messege store in prev
-  }, []);
+  useEffect(() => {
+    dispatch(removeNewMessageAlert(chatId));
+    return () => {
+      setMessages([]);
+      setOldMessages([]);
+      setMessage("");
+      setPage(1);
+    };
+  }, [chatId]);
+  const newMessagesHandler = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return; // 
+      setMessages((prev) => [...prev, data.message]); // fetch feom sockets and user messege store in prev
+    },
+    [chatId]
+  );
 
   const eventArr = {
     [NEW_MASSAGES]: newMessagesHandler,

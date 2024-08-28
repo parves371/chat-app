@@ -93,8 +93,8 @@ io.on("connection", (socket) => {
       chatId,
     });
     console.log(NEW_MASSAGES);
-    // messages alert
-    io.to(membersSockets).emit(NEW_MASSAGE, { chatId });
+
+    io.to(membersSockets).emit(NEW_MASSAGE, { chatId }); // message alert
 
     try {
       await Message.create(messageForDb);

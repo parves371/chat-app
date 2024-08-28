@@ -9,6 +9,7 @@ import {
 import {
   AppBar,
   Backdrop,
+  Badge,
   Box,
   IconButton,
   Toolbar,
@@ -34,6 +35,7 @@ import {
   setIsNotification,
   setIsSearch,
 } from "../../redux/reducers/misc";
+import { resetNotificationsCount } from "../../redux/reducers/chat";
 const Header = () => {
   const [isNewGroup, setIsNewGroup] = useState(false);
 
@@ -41,16 +43,19 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const { isSearch, isNotification } = useSelector((state) => state.misc);
+  const { notificationsCount } = useSelector((state) => state.chat);
 
-  const handleMobile = () => dispatch(setIsMobileMenuFriend(true)); // redux-toolkit
-
-  const openSearchbox = () => dispatch(setIsSearch(true)); // redux-toolkit
-
+  const handleMobile = () => dispatch(setIsMobileMenuFriend(true)); // open mobile menu
+  const openSearchbox = () => dispatch(setIsSearch(true)); // open search dialog
   const openNewGroup = () => {
-    setIsNewGroup((prev) => !prev);
+    setIsNewGroup((prev) => !prev); // open new group dialog
   };
   const navigateToGroup = () => navigate("/groups");
-  const openNotification = () => dispatch(setIsNotification(true));
+  const openNotification = () => {
+    dispatch(setIsNotification(true)); // open notifications dialog
+    dispatch(resetNotificationsCount()); // reset notifications count
+  };
+
   const logoutHandler = async () => {
     try {
       const { data } = await axio.get(`${server}/api/v1/user/logout`, {
@@ -104,6 +109,7 @@ const Header = () => {
                 title="Notification"
                 onClick={openNotification}
                 icon={<NotificationIcon />}
+                value={notificationsCount}
               />
               <IconsBtn
                 title="Logout"
@@ -133,11 +139,11 @@ const Header = () => {
   );
 };
 
-const IconsBtn = ({ title, icon, onClick }) => {
+const IconsBtn = ({ title, icon, onClick, value }) => {
   return (
     <Tooltip title={title}>
       <IconButton color="inherit" size="large" onClick={onClick}>
-        {icon}
+        {value ? <Badge badgeContent={value}>{icon}</Badge> : icon}
       </IconButton>
     </Tooltip>
   );

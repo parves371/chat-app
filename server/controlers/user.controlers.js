@@ -120,7 +120,7 @@ const sendRequest = tryCatch(async (req, res, next) => {
     sender: req.user,
     receiver: userId,
   });
-  emitEvent(req, NEW_REQUEST, [userId]);
+  emitEvent(req, NEW_REQUEST, [userId]); // alert the receiver
 
   res.status(200).json({
     success: true,

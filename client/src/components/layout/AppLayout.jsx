@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import Title from "../shared/Title";
@@ -7,11 +7,17 @@ import Header from "./Header";
 
 import { Drawer, Grid, Skeleton } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useErrorHook } from "../../hooks/hook";
+import { NEW_MASSAGE, NEW_REQUEST } from "../../constants/event";
+import { useErrorHook, useSocketEvents } from "../../hooks/hook";
 import { useMyChatsQuery } from "../../redux/api/api";
+import {
+  incrementNotificationsCount,
+  setNewMessagesAlert,
+} from "../../redux/reducers/chat";
 import { setIsMobileMenuFriend } from "../../redux/reducers/misc";
 import { getSocket } from "../../socket";
 import ProfileCard from "../specific/ProfileCard";
+import { getOrSaveLocalStorage } from "../../lib/features";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
@@ -23,11 +29,17 @@ const AppLayout = () => (WrappedComponent) => {
 
     const { isMobileMenuFriend } = useSelector((state) => state.misc);
     const { user } = useSelector((state) => state.auth);
+    const { newMessagesAlert } = useSelector((state) => state.chat);
 
     //  rtk query
     const { isLoading, data, error, isError, refetch } = useMyChatsQuery("");
 
     useErrorHook([{ isError, error }]);
+
+    useEffect(() => {
+      // save local stoage notification count
+      getOrSaveLocalStorage({ key: NEW_MASSAGE, value: newMessagesAlert });
+    }, [newMessagesAlert]);
 
     const handleDeleteChat = (e, _id, groupChat) => {
       e.preventDefault();
@@ -36,6 +48,29 @@ const AppLayout = () => (WrappedComponent) => {
 
     const handleMobileMenuFriendClose = () =>
       dispatch(setIsMobileMenuFriend(!isMobileMenuFriend));
+
+    // use socket events
+
+    const newMessagesAlertHandler = useCallback(
+      (data) => {
+        if (data.chatId === chatId) return;
+        dispatch(setNewMessagesAlert(data));
+      },
+      [chatId]
+    );
+
+    const newRequestHandler = useCallback(
+      (data) => {
+        dispatch(incrementNotificationsCount());
+      },
+      [dispatch]
+    );
+    const eventArr = {
+      [NEW_MASSAGE]: newMessagesAlertHandler, // alert for new message
+      [NEW_REQUEST]: newRequestHandler, // alert for sent friend request and get new notification
+    };
+
+    useSocketEvents(socket, eventArr);
 
     return (
       <>
@@ -53,6 +88,7 @@ const AppLayout = () => (WrappedComponent) => {
               chats={data?.chats}
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
+              newMassagesAlert={newMessagesAlert}
             />
           </Drawer>
         )}
@@ -71,6 +107,7 @@ const AppLayout = () => (WrappedComponent) => {
                 chats={data?.chats}
                 chatId={chatId}
                 handleDeleteChat={handleDeleteChat}
+                newMassagesAlert={newMessagesAlert}
               />
             )}
           </Grid>
