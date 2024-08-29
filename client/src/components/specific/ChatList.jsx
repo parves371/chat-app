@@ -17,7 +17,12 @@ const ChatList = ({
   handleDeleteChat,
 }) => {
   return (
-    <Stack width={w} direction={"column"} sx={{ overflowY: "auto" }} height={"100%"}>
+    <Stack
+      width={w}
+      direction={"column"}
+      sx={{ overflowY: "auto" }}
+      height={"100%"}
+    >
       {chats?.map((chat, index) => {
         const { _id, name, avatar, members, groupChat } = chat;
 

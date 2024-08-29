@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 import Title from "../shared/Title";
@@ -17,7 +17,6 @@ import {
 import { setIsMobileMenuFriend } from "../../redux/reducers/misc";
 import { getSocket } from "../../socket";
 import ProfileCard from "../specific/ProfileCard";
-import { getOrSaveLocalStorage } from "../../lib/features";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
@@ -36,11 +35,6 @@ const AppLayout = () => (WrappedComponent) => {
 
     useErrorHook([{ isError, error }]);
 
-    useEffect(() => {
-      // save local stoage notification count
-      getOrSaveLocalStorage({ key: NEW_MASSAGE, value: newMessagesAlert });
-    }, [newMessagesAlert]);
-
     const handleDeleteChat = (e, _id, groupChat) => {
       e.preventDefault();
       console.log("delete chat", _id, groupChat);
@@ -53,6 +47,7 @@ const AppLayout = () => (WrappedComponent) => {
 
     const newMessagesAlertHandler = useCallback(
       (data) => {
+        console.log("alert data", data);
         if (data.chatId === chatId) return;
         dispatch(setNewMessagesAlert(data));
       },

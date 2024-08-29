@@ -35,10 +35,13 @@ const getLast7Days = () => {
   return last7Days;
 };
 
-const getOrSaveLocalStorage = ({ key, value, get = false }) => {
-  if (get)
-    return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : null;
-  else localStorage.setItem(key, JSON.stringify(value));
-};
+function getOrSaveLocalStorage({ key, value, get = false }) {
+  if (get) {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  } else {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+}
 
 export { fileFormat, fileTransform, getLast7Days, getOrSaveLocalStorage };

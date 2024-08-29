@@ -78,7 +78,7 @@ const Chate = ({ chatId, user }) => {
   }, [chatId]);
   const newMessagesHandler = useCallback(
     (data) => {
-      if (data.chatId !== chatId) return; // 
+      if (data.chatId !== chatId) return; //
       setMessages((prev) => [...prev, data.message]); // fetch feom sockets and user messege store in prev
     },
     [chatId]
