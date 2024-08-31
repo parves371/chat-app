@@ -13,7 +13,12 @@ import { gray, orange } from "../constants/color";
 
 import { useInfiniteScrollTop } from "6pp";
 import { useDispatch } from "react-redux";
-import { NEW_MASSAGES, START_TYPING, STOP_TYPING } from "../constants/event";
+import {
+  ALERT,
+  NEW_MASSAGES,
+  START_TYPING,
+  STOP_TYPING,
+} from "../constants/event";
 import { useErrorHook, useSocketEvents } from "../hooks/hook";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { removeNewMessageAlert } from "../redux/reducers/chat";
@@ -29,7 +34,7 @@ const Chate = ({ chatId, user }) => {
   const dispatch = useDispatch();
 
   const [message, setMessage] = useState(""); //on change event
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]); // socket messages
   const [page, setPage] = useState(1);
   const [fileMenuAnchorEl, setFileMenuAnchorEl] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
@@ -135,8 +140,22 @@ const Chate = ({ chatId, user }) => {
     },
     [chatId]
   );
-  console.log(userTyping);
+  const alertHandler = useCallback((data) => {
+    const realTimeMessage = {
+      content: data,
+      sender: {
+        _id: "dklsdmlsdla",
+        name: "Admin",
+      },
+      chatId,
+      createdAt: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, realTimeMessage]);
+  }, [chatId]);
+
   const eventArr = {
+    [ALERT]: alertHandler,
     [NEW_MASSAGES]: newMessagesHandler,
     [START_TYPING]: startTypingHandler,
     [STOP_TYPING]: stopTypingHandler,
