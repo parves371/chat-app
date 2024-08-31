@@ -1,27 +1,32 @@
-import express from "express";
-import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
-import { connectDB } from "./utils/featurs.js";
-import { errrorMiddleware } from "./middlewares/error.js";
-import { v4 as uuid } from "uuid";
-import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import { v4 as uuid } from "uuid";
+import { errrorMiddleware } from "./middlewares/error.js";
+import { connectDB } from "./utils/featurs.js";
 
-import { NEW_MASSAGE, NEW_MASSAGES } from "./constants/event.js";
-import { getSockets } from "./lib/helper.js";
-import { Message } from "./models/massages.model.js";
+import {
+  NEW_MASSAGE,
+  NEW_MASSAGES,
+  START_TYPING,
+  STOP_TYPING,
+} from "./constants/event.js";
 import { corsOpstions } from "./lib/config.js";
+import { getSockets } from "./lib/helper.js";
 import { isSocketAuthenticated } from "./middlewares/auth.js";
+import { Message } from "./models/massages.model.js";
 
-import { Server } from "socket.io";
 import { createServer } from "http";
+import { Server } from "socket.io";
 dotenv.config({
   path: "./.env",
 });
 // routes
-import userRoutes from "./routes/user.routes.js";
-import chatRoutes from "./routes/chat.routes.js";
 import amninRoutes from "./routes/admin.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const mongoUrI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
@@ -85,14 +90,13 @@ io.on("connection", (socket) => {
       chatId,
       sender: user._id,
     };
-    // console.log("emmiting", realTimeMessage);
+
     const membersSockets = getSockets(members);
 
     io.to(membersSockets).emit(NEW_MASSAGES, {
       message: realTimeMessage,
       chatId,
     });
-    console.log(NEW_MASSAGES);
 
     io.to(membersSockets).emit(NEW_MASSAGE, { chatId }); // message alert
 
@@ -101,6 +105,17 @@ io.on("connection", (socket) => {
     } catch (error) {
       console.log(error);
     }
+  });
+
+  socket.on(START_TYPING, ({ chatId, members }) => {
+    const membersSockets = getSockets(members);
+    socket.to(membersSockets).emit(START_TYPING, { chatId });
+  });
+  
+  socket.on(STOP_TYPING, ({ chatId, members }) => {
+    console.log("stop typing");
+    const membersSockets = getSockets(members);
+    socket.to(membersSockets).emit(STOP_TYPING, { chatId });
   });
 
   socket.on("disconnect", () => {

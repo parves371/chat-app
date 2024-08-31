@@ -47,7 +47,6 @@ const AppLayout = () => (WrappedComponent) => {
 
     const newMessagesAlertHandler = useCallback(
       (data) => {
-        console.log("alert data", data);
         if (data.chatId === chatId) return;
         dispatch(setNewMessagesAlert(data));
       },

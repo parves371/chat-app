@@ -1,7 +1,7 @@
-import { styled } from "@mui/material";
+import { keyframes, Skeleton, styled } from "@mui/material";
 import { Link as LinkComponent } from "react-router-dom";
 import { gray, matblack } from "../../constants/color";
-export const VisuallyHiddenInpute = styled("input")({
+const VisuallyHiddenInpute = styled("input")({
   border: 0,
   clip: "rect(0 0 0 0)",
   height: 1,
@@ -13,7 +13,7 @@ export const VisuallyHiddenInpute = styled("input")({
   width: 1,
 });
 
-export const Link = styled(LinkComponent)`
+const Link = styled(LinkComponent)`
   text-decoration: none;
   color: inherit;
   padding: 1rem;
@@ -32,7 +32,7 @@ export const InputBox = styled("input")`
   background-color: ${gray};
 `;
 
-export const CurveButton = styled("button")`
+const CurveButton = styled("button")`
   border: none;
   outline: none;
   border-radius: 1.5rem;
@@ -46,7 +46,7 @@ export const CurveButton = styled("button")`
   }
 `;
 
-export const SearchBox = styled("input")`
+const SearchBox = styled("input")`
   padding: 1rem 2rem;
   width: 20vmax;
   border: none;
@@ -55,3 +55,14 @@ export const SearchBox = styled("input")`
   background-color: ${gray};
   font-size: 1.1rem;
 `;
+
+const bounceAnimation = keyframes`
+0% { transform: scale(1); }
+50% { transform: scale(1.5); }
+100% { transform: scale(1); }
+`;
+const BouncingSkeleton = styled(Skeleton)(() => ({
+  animation: `${bounceAnimation} 1s infinite`,
+}));
+
+export { BouncingSkeleton, SearchBox, CurveButton, VisuallyHiddenInpute, Link };
