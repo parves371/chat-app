@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
@@ -20,6 +20,7 @@ import ProfileCard from "../specific/ProfileCard";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
+    const navigate = useNavigate();
     const chatId = params.chatId;
 
     const socket = getSocket();
@@ -61,9 +62,10 @@ const AppLayout = () => (WrappedComponent) => {
     );
     const refetchHandler = useCallback(
       (data) => {
+        // navigate("/");
         refetch();
       },
-      [refetch]
+      [refetch, navigate]
     );
     const eventArr = {
       [NEW_MASSAGE]: newMessagesAlertHandler, // alert for new message

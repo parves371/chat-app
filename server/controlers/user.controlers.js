@@ -212,7 +212,7 @@ const getMyFriends = tryCatch(async (req, res) => {
 
   if (chatId) {
     const chat = await Chat.findById(chatId);
-    availableFriends = myFriends.filter(
+    const availableFriends = myFriends.filter(
       (friend) => !chat.members.includes(friend._id)
     );
 

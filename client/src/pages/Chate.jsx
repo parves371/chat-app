@@ -13,6 +13,8 @@ import { gray, orange } from "../constants/color";
 
 import { useInfiniteScrollTop } from "6pp";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { TypingLoader } from "../components/layout/Loaders";
 import {
   ALERT,
   NEW_MASSAGES,
@@ -24,11 +26,11 @@ import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { removeNewMessageAlert } from "../redux/reducers/chat";
 import { setIsFileMenu } from "../redux/reducers/misc";
 import { getSocket } from "../socket";
-import { TypingLoader } from "../components/layout/Loaders";
 
 const Chate = ({ chatId, user }) => {
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
+  const navigate = useNavigate();
 
   const socket = getSocket();
   const dispatch = useDispatch();
@@ -119,6 +121,10 @@ const Chate = ({ chatId, user }) => {
       });
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (!chatDetails.data.chat) return navigate("/");
+  }, [chatDetails.data]);
   const newMessagesHandler = useCallback(
     (data) => {
       if (data.chatId !== chatId) return; //
@@ -140,19 +146,22 @@ const Chate = ({ chatId, user }) => {
     },
     [chatId]
   );
-  const alertHandler = useCallback((data) => {
-    const realTimeMessage = {
-      content: data,
-      sender: {
-        _id: "dklsdmlsdla",
-        name: "Admin",
-      },
-      chatId,
-      createdAt: new Date().toISOString(),
-    };
+  const alertHandler = useCallback(
+    (data) => {
+      const realTimeMessage = {
+        content: data,
+        sender: {
+          _id: "dklsdmlsdla",
+          name: "Admin",
+        },
+        chatId,
+        createdAt: new Date().toISOString(),
+      };
 
-    setMessages((prev) => [...prev, realTimeMessage]);
-  }, [chatId]);
+      setMessages((prev) => [...prev, realTimeMessage]);
+    },
+    [chatId]
+  );
 
   const eventArr = {
     [ALERT]: alertHandler,

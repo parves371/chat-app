@@ -154,6 +154,7 @@ const removeMember = tryCatch(async (req, res, next) => {
   if (!userThatWillBeRemove)
     return next(new ErrorHandler("userId not found", 404));
 
+  const allChatMembers = chat.members.map((i) => i.toString());
   chat.members = chat.members.filter((i) => i.toString() !== userId.toString());
 
   await chat.save();
@@ -164,7 +165,7 @@ const removeMember = tryCatch(async (req, res, next) => {
     chat.members,
     `${userThatWillBeRemove.name} has been removed from the group`
   );
-  emitEvent(req, FEFETCH_CHATS, chat.members);
+  emitEvent(req, FEFETCH_CHATS, allChatMembers);
   res.status(200).json({
     success: true,
     message: "Member removed successfully",
@@ -362,6 +363,14 @@ const getMessages = tryCatch(async (req, res, next) => {
 
   const limit = 20;
   const skip = (page - 1) * limit;
+
+  const chat = await Chat.findById(chatId);
+  if (!chat) return next(new ErrorHandler("Chat not found", 404));
+  if (!chat.members.includes(req.user.toString())) {
+    return next(
+      new ErrorHandler("Unauthorized: You can't access this chat", 403)
+    );
+  }
 
   const [messages, totalMessagesCount] = await Promise.all([
     Message.find({ chatId })

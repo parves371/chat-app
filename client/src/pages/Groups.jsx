@@ -24,6 +24,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Link } from "../components/styles/StyledComponents";
 import { bgGradient, matblack } from "../constants/color";
 
+import { useDispatch, useSelector } from "react-redux";
 import { LayoutLoader } from "../components/layout/Loaders";
 import AvaterCard from "../components/shared/AvaterCard";
 import UserItem from "../components/shared/UserItem";
@@ -31,8 +32,10 @@ import { useAsyncMutation, useErrorHook } from "../hooks/hook";
 import {
   useChatDetailsQuery,
   useMyGroupsQuery,
-  useRenameGroupMutation,
+  useRemoveGroupMemberMutation,
+  useRenameGroupMutation
 } from "../redux/api/api";
+import { setIsAddMember } from "../redux/reducers/misc";
 const ConfirmDeleteDialog = lazy(() =>
   import("../components/dialogs/ConfirmDeleteDailog")
 );
@@ -40,10 +43,12 @@ const AddMemberDailog = lazy(() =>
   import("../components/dialogs/AddMemberDailog")
 );
 
-const isAddmember = false;
 const Groups = () => {
   const navigate = useNavigate();
   const chatId = useSearchParams()[0].get("group");
+  const dispatch = useDispatch();
+
+  const { isAddMember } = useSelector((state) => state.misc);
 
   const myGroups = useMyGroupsQuery("");
   const groupDetails = useChatDetailsQuery(
@@ -54,6 +59,8 @@ const Groups = () => {
   const { executeMutation, isLoading } = useAsyncMutation(
     useRenameGroupMutation
   );
+  const { executeMutation: removeMember, isLoading: memberIsLoading } =
+    useAsyncMutation(useRemoveGroupMemberMutation);
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -110,10 +117,13 @@ const Groups = () => {
     setConfirmDeleteDialog(false);
   };
 
-  const openAddMemberHandler = () => {
-    console.log("add");
+  const openAddMemberHandler = () => dispatch(setIsAddMember(true));
+  const removeMemberHandler = (id) => {
+    removeMember("Removing Member...", {
+      chatId,
+      userId: id,
+    });
   };
-
   const deleteHandler = () => {
     console.log("delete");
   };
@@ -223,7 +233,6 @@ const Groups = () => {
     </Stack>
   );
 
-  const removeMemberHandler = (id) => {};
   return myGroups.isLoading ? (
     <LayoutLoader />
   ) : (
@@ -289,9 +298,9 @@ const Groups = () => {
           </>
         )}
       </Grid>
-      {isAddmember && (
+      {isAddMember && (
         <Suspense fallback={<Backdrop open />}>
-          <AddMemberDailog />
+          <AddMemberDailog chatId={chatId} />
         </Suspense>
       )}
 
