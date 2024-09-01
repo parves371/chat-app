@@ -74,6 +74,25 @@ const api = createApi({
         credentials: "include",
       }),
     }),
+    myGroups: builder.query({
+      query: () => ({
+        url: "chat/get-my-groups",
+        credentials: "include",
+      }),
+      providesTags: ["Chat"],
+    }),
+    availableFriendsDetails: builder.query({
+      query: (chatId) => {
+        let url = `user/get-my-friends`;
+        if (chatId) url += `?chatId=${chatId}`;
+
+        return {
+          url,
+          credentials: "include",
+        };
+      },
+      providesTags: ["Chat"],
+    }),
   }),
 });
 
@@ -88,4 +107,6 @@ export const {
   useChatDetailsQuery,
   useGetMessagesQuery,
   useSendAtTachmentsMutation,
+  useMyGroupsQuery,
+  useAvailableFriendsDetailsQuery,
 } = api;

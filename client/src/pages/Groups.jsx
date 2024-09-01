@@ -2,7 +2,6 @@ import {
   Backdrop,
   Box,
   Button,
-  ButtonGroup,
   Drawer,
   Grid,
   IconButton,
@@ -21,13 +20,16 @@ import {
   KeyboardBackspace as KeyboardBackspaceIcon,
   Menu as MenuIcon,
 } from "@mui/icons-material/";
-import { bgGradient, matblack } from "../constants/color";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Link } from "../components/styles/StyledComponents";
+import { bgGradient, matblack } from "../constants/color";
 
 import AvaterCard from "../components/shared/AvaterCard";
-import { sampleChat, sampleUser } from "../constants/sampleData";
 import UserItem from "../components/shared/UserItem";
+import { sampleChat, sampleUser } from "../constants/sampleData";
+import { useMyGroupsQuery } from "../redux/api/api";
+import { useErrorHook } from "../hooks/hook";
+import { LayoutLoader } from "../components/layout/Loaders";
 const ConfirmDeleteDialog = lazy(() =>
   import("../components/dialogs/ConfirmDeleteDailog")
 );
@@ -40,12 +42,19 @@ const Groups = () => {
   const navigate = useNavigate();
   const chatId = useSearchParams()[0].get("group");
 
+  const myGroups = useMyGroupsQuery("");
+
+  console.log(myGroups.data);
+
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [confirmDeleteDailog, setConfirmDeleteDialog] = useState(false);
 
   const [groupName, setGroupName] = useState("");
   const [groupNameUpdate, setGroupNameUpdate] = useState("");
+
+  const errors = [{ isError: myGroups.isError, error: myGroups.error }];
+  useErrorHook(errors);
 
   const navigateBack = () => {
     navigate("/");
@@ -181,7 +190,9 @@ const Groups = () => {
   );
 
   const removeMemberHandler = (id) => {};
-  return (
+  return myGroups.isLoading ? (
+    <LayoutLoader />
+  ) : (
     <Grid container height={"100vh"}>
       <Grid
         item

@@ -1,23 +1,22 @@
 import { Chat } from "../models/chat.models.js";
-import { User } from "../models/user.models.js";
 import { Message } from "../models/massages.model.js";
+import { User } from "../models/user.models.js";
 
 import {
   ALERT,
   FEFETCH_CHATS,
-  NEW_ATTACHMENT,
   NEW_MASSAGE,
-  NEW_MASSAGES,
+  NEW_MASSAGES
 } from "../constants/event.js";
 import { tryCatch } from "../middlewares/error.js";
 
+import { getOtherMembers } from "../lib/helper.js";
 import {
   deleteFilesFromCloudinary,
   emitEvent,
   uploadFilesToCloudinary,
 } from "../utils/featurs.js";
 import { ErrorHandler } from "../utils/utility.js";
-import { getOtherMembers } from "../lib/helper.js";
 
 const newGroupChat = tryCatch(async (req, res, next) => {
   const { name, members } = req.body;
@@ -382,15 +381,7 @@ const getMessages = tryCatch(async (req, res, next) => {
 });
 
 export {
-  newGroupChat,
-  getMyChats,
-  getMyGroups,
-  addMembers,
-  removeMember,
-  leaveGroup,
-  sendattachment,
-  getChatDetails,
-  renameGroup,
-  deleteChat,
-  getMessages,
+  addMembers, deleteChat, getChatDetails, getMessages, getMyChats,
+  getMyGroups, leaveGroup, newGroupChat, removeMember, renameGroup, sendattachment
 };
+

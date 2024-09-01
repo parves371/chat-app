@@ -2,6 +2,7 @@ import {
   Button,
   Dialog,
   DialogTitle,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -11,12 +12,21 @@ import React, { useState } from "react";
 import { sampleUser } from "../../constants/sampleData";
 import UserItem from "../shared/UserItem";
 import { useInputValidation } from "6pp";
+import { useDispatch } from "react-redux";
+import { useAvailableFriendsDetailsQuery } from "../../redux/api/api";
+import { useErrorHook } from "../../hooks/hook";
 
 const NewGroups = () => {
-  const [members, setMembers] = useState(sampleUser);
+  const dispatch = useDispatch();
+
+  const { isError, isLoading, error, data } = useAvailableFriendsDetailsQuery();
+  console.log(data);
+  const groupName = useInputValidation("");
+
   const [selectedMembers, setSelectedMembers] = useState([]);
 
-  const groupName = useInputValidation("");
+  const errors = [{ isError, error }];
+  useErrorHook(errors);
 
   const selectMemberHandler = (id) => {
     setSelectedMembers((prev) =>
@@ -26,7 +36,9 @@ const NewGroups = () => {
     );
   };
 
-  const submitHandler = () => {};
+  const submitHandler = () => {
+    console.log(groupName.value, selectedMembers);
+  };
   const closeHandler = () => {};
   return (
     <Dialog open onClose={closeHandler}>
@@ -43,16 +55,20 @@ const NewGroups = () => {
         />
         <Typography variant="body1">Member</Typography>
         <Stack>
-          {members.map((i) => {
-            return (
-              <UserItem
-                user={i}
-                key={i._id}
-                handler={selectMemberHandler}
-                isAdded={selectedMembers.includes(i._id)}
-              />
-            );
-          })}
+          {isLoading ? (
+            <Skeleton />
+          ) : (
+            data.myFriends?.map((i) => {
+              return (
+                <UserItem
+                  user={i}
+                  key={i._id}
+                  handler={selectMemberHandler}
+                  isAdded={selectedMembers.includes(i._id)}
+                />
+              );
+            })
+          )}
         </Stack>
         <Stack direction={"row"} justifyContent={"space-evenly"}>
           <Button variant="text" color="error" size="large">
