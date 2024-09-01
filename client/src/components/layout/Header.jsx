@@ -32,24 +32,23 @@ import { server } from "../../constants/config";
 import { userNotExists } from "../../redux/reducers/auth";
 import {
   setIsMobileMenuFriend,
+  setIsNewGroup,
   setIsNotification,
   setIsSearch,
 } from "../../redux/reducers/misc";
 import { resetNotificationsCount } from "../../redux/reducers/chat";
 const Header = () => {
-  const [isNewGroup, setIsNewGroup] = useState(false);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isSearch, isNotification } = useSelector((state) => state.misc);
+  const { isSearch, isNotification, isnewGroup } = useSelector(
+    (state) => state.misc
+  );
   const { notificationsCount } = useSelector((state) => state.chat);
 
   const handleMobile = () => dispatch(setIsMobileMenuFriend(true)); // open mobile menu
   const openSearchbox = () => dispatch(setIsSearch(true)); // open search dialog
-  const openNewGroup = () => {
-    setIsNewGroup((prev) => !prev); // open new group dialog
-  };
+  const openNewGroup = () => dispatch(setIsNewGroup(true)); // open new group dialog
   const navigateToGroup = () => navigate("/groups");
   const openNotification = () => {
     dispatch(setIsNotification(true)); // open notifications dialog
@@ -125,7 +124,7 @@ const Header = () => {
           <SearchDialog />
         </Suspense>
       )}
-      {isNewGroup && (
+      {isnewGroup && (
         <Suspense fallback={<Backdrop open={true} />}>
           <NewGroupsDialog />
         </Suspense>

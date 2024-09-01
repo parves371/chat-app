@@ -44,8 +44,6 @@ const Groups = () => {
 
   const myGroups = useMyGroupsQuery("");
 
-  console.log(myGroups.data);
-
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [confirmDeleteDailog, setConfirmDeleteDialog] = useState(false);
@@ -202,7 +200,7 @@ const Groups = () => {
           backgroundImage: bgGradient,
         }}
       >
-        <GroupsList groups={sampleChat} chatId={chatId} />
+        <GroupsList groups={myGroups.data?.groups} chatId={chatId} />
       </Grid>
       <Grid
         item
@@ -275,7 +273,7 @@ const Groups = () => {
         open={isMobileOpen}
         onClose={handleMenuClose}
       >
-        <GroupsList w={"50vw"} groups={sampleChat} chatId={chatId} />
+        <GroupsList w={"50vw"} groups={myGroups.data?.groups} chatId={chatId} />
       </Drawer>
     </Grid>
   );

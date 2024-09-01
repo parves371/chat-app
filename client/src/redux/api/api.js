@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { server } from "../../constants/config";
+import { setIsNewGroup } from "../reducers/misc";
 
 const api = createApi({
   reducerPath: "api",
@@ -93,6 +94,14 @@ const api = createApi({
       },
       providesTags: ["Chat"],
     }),
+    newGroup: builder.mutation({
+      query: ({name, members}) => ({
+        url: `chat/new-chat`,
+        method: "POST",
+        body: {name, members},
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -109,4 +118,5 @@ export const {
   useSendAtTachmentsMutation,
   useMyGroupsQuery,
   useAvailableFriendsDetailsQuery,
+  useNewGroupMutation,
 } = api;

@@ -9,20 +9,25 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 
-import { sampleUser } from "../../constants/sampleData";
-import UserItem from "../shared/UserItem";
 import { useInputValidation } from "6pp";
-import { useDispatch } from "react-redux";
-import { useAvailableFriendsDetailsQuery } from "../../redux/api/api";
-import { useErrorHook } from "../../hooks/hook";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { useAsyncMutation, useErrorHook } from "../../hooks/hook";
+import {
+  useAvailableFriendsDetailsQuery,
+  useNewGroupMutation,
+} from "../../redux/api/api";
+import { setIsNewGroup } from "../../redux/reducers/misc";
+import UserItem from "../shared/UserItem";
 
 const NewGroups = () => {
   const dispatch = useDispatch();
+  const { isnewGroup } = useSelector((state) => state.misc);
 
   const { isError, isLoading, error, data } = useAvailableFriendsDetailsQuery();
-  console.log(data);
-  const groupName = useInputValidation("");
+  const newGroupExecuteMutation = useAsyncMutation(useNewGroupMutation);
 
+  const groupName = useInputValidation("");
   const [selectedMembers, setSelectedMembers] = useState([]);
 
   const errors = [{ isError, error }];
@@ -37,11 +42,20 @@ const NewGroups = () => {
   };
 
   const submitHandler = () => {
-    console.log(groupName.value, selectedMembers);
+    if (!groupName.value) return toast.error("Enter Group Name");
+    if (selectedMembers.length < 2)
+      return toast.error("Select atleast 2 members");
+
+    newGroupExecuteMutation.executeMutation("Creating Group...", {
+      name: groupName.value,
+      members: selectedMembers,
+    });
+
+    closeHandler();
   };
-  const closeHandler = () => {};
+  const closeHandler = () => dispatch(setIsNewGroup(false));
   return (
-    <Dialog open onClose={closeHandler}>
+    <Dialog open={isnewGroup} onClose={closeHandler}>
       <Stack p={{ SX: "1rem", sm: "3rem" }} width={"25rem"} spacing={"2rem"}>
         <DialogTitle textAlign={"center"} variant="h4">
           new groups
@@ -71,10 +85,20 @@ const NewGroups = () => {
           )}
         </Stack>
         <Stack direction={"row"} justifyContent={"space-evenly"}>
-          <Button variant="text" color="error" size="large">
+          <Button
+            variant="text"
+            color="error"
+            size="large"
+            onClick={closeHandler}
+          >
             Cancel
           </Button>
-          <Button variant="contained" size="large" onClick={submitHandler}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={submitHandler}
+            disabled={newGroupExecuteMutation.isLoading}
+          >
             {" "}
             Create
           </Button>
