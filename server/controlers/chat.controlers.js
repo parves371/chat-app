@@ -6,7 +6,7 @@ import {
   ALERT,
   FEFETCH_CHATS,
   NEW_MASSAGE,
-  NEW_MASSAGES
+  NEW_MASSAGES,
 } from "../constants/event.js";
 import { tryCatch } from "../middlewares/error.js";
 
@@ -284,6 +284,8 @@ const renameGroup = tryCatch(async (req, res, next) => {
   const chatId = req.params.id;
   const { name } = req.body;
 
+  console.log(chatId, name);
+
   const chat = await Chat.findById(chatId);
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
   if (!chat.groupChat)
@@ -381,7 +383,15 @@ const getMessages = tryCatch(async (req, res, next) => {
 });
 
 export {
-  addMembers, deleteChat, getChatDetails, getMessages, getMyChats,
-  getMyGroups, leaveGroup, newGroupChat, removeMember, renameGroup, sendattachment
+  addMembers,
+  deleteChat,
+  getChatDetails,
+  getMessages,
+  getMyChats,
+  getMyGroups,
+  leaveGroup,
+  newGroupChat,
+  removeMember,
+  renameGroup,
+  sendattachment,
 };
-

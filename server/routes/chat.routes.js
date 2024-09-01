@@ -21,7 +21,7 @@ import {
   newGroupChatValidator,
   removeMemberValidator,
   renameGroupValidator,
-  validate
+  validate,
 } from "../lib/validator.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import { attachmentMulter } from "../middlewares/multer.middlewares.js";
@@ -38,11 +38,7 @@ app.put("/remove-member", removeMemberValidator(), validate, removeMember);
 app.delete("/leave/:id", leaveGroupValidator(), validate, leaveGroup);
 
 // send attachments
-app.post(
-  "/send-attachment",
-  attachmentMulter,
-  sendattachment
-);
+app.post("/send-attachment", attachmentMulter, sendattachment);
 
 // get massages
 app.get("/messages/:id", getMessagesValidator(), validate, getMessages);
@@ -50,7 +46,7 @@ app.get("/messages/:id", getMessagesValidator(), validate, getMessages);
 app
   .route("/:id")
   .get(getChatDetailsValidator(), validate, getChatDetails)
-  .put(renameGroupValidator, validate, renameGroup)
-  .delete(deleteChatValidator, validate, deleteChat);
+  .put(renameGroupValidator(), validate, renameGroup)
+  .delete(deleteChatValidator(), validate, deleteChat);
 
 export default app;
