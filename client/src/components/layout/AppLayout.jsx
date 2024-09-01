@@ -7,7 +7,7 @@ import Header from "./Header";
 
 import { Drawer, Grid, Skeleton } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { NEW_MASSAGE, NEW_REQUEST } from "../../constants/event";
+import { FEFETCH_CHATS, NEW_MASSAGE, NEW_REQUEST } from "../../constants/event";
 import { useErrorHook, useSocketEvents } from "../../hooks/hook";
 import { useMyChatsQuery } from "../../redux/api/api";
 import {
@@ -59,9 +59,16 @@ const AppLayout = () => (WrappedComponent) => {
       },
       [dispatch]
     );
+    const refetchHandler = useCallback(
+      (data) => {
+        refetch();
+      },
+      [refetch]
+    );
     const eventArr = {
       [NEW_MASSAGE]: newMessagesAlertHandler, // alert for new message
       [NEW_REQUEST]: newRequestHandler, // alert for sent friend request and get new notification
+      [FEFETCH_CHATS]: refetchHandler, // fetch chats
     };
 
     useSocketEvents(socket, eventArr);
