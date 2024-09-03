@@ -62,15 +62,16 @@ const AppLayout = () => (WrappedComponent) => {
     );
     const refetchHandler = useCallback(
       (data) => {
-        // navigate("/");
+        navigate("/");
         refetch();
+        console.log("refetch");
       },
       [refetch, navigate]
     );
     const eventArr = {
       [NEW_MASSAGE]: newMessagesAlertHandler, // alert for new message
       [NEW_REQUEST]: newRequestHandler, // alert for sent friend request and get new notification
-      [FEFETCH_CHATS]: refetchHandler, // fetch chats
+      [FEFETCH_CHATS]: refetchHandler, // refetch chats
     };
 
     useSocketEvents(socket, eventArr);

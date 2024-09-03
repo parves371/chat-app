@@ -2,6 +2,7 @@ import {
   Backdrop,
   Box,
   Button,
+  CircularProgress,
   Drawer,
   Grid,
   IconButton,
@@ -31,9 +32,10 @@ import UserItem from "../components/shared/UserItem";
 import { useAsyncMutation, useErrorHook } from "../hooks/hook";
 import {
   useChatDetailsQuery,
+  useDeleteChatMutation,
   useMyGroupsQuery,
   useRemoveGroupMemberMutation,
-  useRenameGroupMutation
+  useRenameGroupMutation,
 } from "../redux/api/api";
 import { setIsAddMember } from "../redux/reducers/misc";
 const ConfirmDeleteDialog = lazy(() =>
@@ -59,8 +61,10 @@ const Groups = () => {
   const { executeMutation, isLoading } = useAsyncMutation(
     useRenameGroupMutation
   );
-  const { executeMutation: removeMember, isLoading: memberIsLoading } =
+  const { executeMutation: removeMember, isLoading: isLoadingremoveMember } =
     useAsyncMutation(useRemoveGroupMemberMutation);
+  const { executeMutation: deleteGroup, isLoading: isLoadingdeleteGroup } =
+    useAsyncMutation(useDeleteChatMutation);
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -125,7 +129,11 @@ const Groups = () => {
     });
   };
   const deleteHandler = () => {
-    console.log("delete");
+    deleteGroup("Deleting Group...", {
+      chatId,
+    });
+    CloseConfirmDeleteHandler();
+    navigate("/groups");
   };
   useEffect(() => {
     if (chatId) {
@@ -280,19 +288,23 @@ const Groups = () => {
               overflow={"auto"}
             >
               {/* members */}
-              {members.map((i) => (
-                <UserItem
-                  user={i}
-                  key={i._id}
-                  isAdded
-                  styling={{
-                    boxShadow: "0 0  0.5rem rgba(0,0,0,0.2)",
-                    padding: "1rem 2rem",
-                    borderRadius: "1rem",
-                  }}
-                  handler={removeMemberHandler}
-                />
-              ))}
+              {isLoadingremoveMember ? (
+                <CircularProgress />
+              ) : (
+                members.map((i) => (
+                  <UserItem
+                    user={i}
+                    key={i._id}
+                    isAdded
+                    styling={{
+                      boxShadow: "0 0  0.5rem rgba(0,0,0,0.2)",
+                      padding: "1rem 2rem",
+                      borderRadius: "1rem",
+                    }}
+                    handler={removeMemberHandler}
+                  />
+                ))
+              )}
             </Stack>
             {ButtonGroup}
           </>

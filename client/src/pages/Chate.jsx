@@ -123,7 +123,7 @@ const Chate = ({ chatId, user }) => {
   }, [messages]);
 
   useEffect(() => {
-    if (!chatDetails.data.chat) return navigate("/");
+    if (!chatDetails?.data?.chat) return navigate("/");
   }, [chatDetails.data]);
   const newMessagesHandler = useCallback(
     (data) => {

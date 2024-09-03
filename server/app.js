@@ -8,6 +8,7 @@ import { errrorMiddleware } from "./middlewares/error.js";
 import { connectDB } from "./utils/featurs.js";
 
 import {
+  FEFETCH_CHATS,
   NEW_MASSAGE,
   NEW_MASSAGES,
   START_TYPING,
@@ -99,6 +100,7 @@ io.on("connection", (socket) => {
     });
 
     io.to(membersSockets).emit(NEW_MASSAGE, { chatId }); // message alert
+    io.to(membersSockets).emit(FEFETCH_CHATS, { chatId }); // REFETCH alert
 
     try {
       await Message.create(messageForDb);
@@ -111,7 +113,7 @@ io.on("connection", (socket) => {
     const membersSockets = getSockets(members);
     socket.to(membersSockets).emit(START_TYPING, { chatId });
   });
-  
+
   socket.on(STOP_TYPING, ({ chatId, members }) => {
     console.log("stop typing");
     const membersSockets = getSockets(members);
