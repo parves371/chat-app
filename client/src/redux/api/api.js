@@ -130,7 +130,7 @@ const api = createApi({
       invalidatesTags: ["Chat"],
     }),
     deleteChat: builder.mutation({
-      query: ({ chatId, name }) => ({
+      query: ({ chatId }) => ({
         url: `chat/${chatId}`,
         method: "DELETE",
         credentials: "include",

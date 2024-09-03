@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Title from "../shared/Title";
@@ -14,14 +14,20 @@ import {
   incrementNotificationsCount,
   setNewMessagesAlert,
 } from "../../redux/reducers/chat";
-import { setIsMobileMenuFriend } from "../../redux/reducers/misc";
+import {
+  setIsDeleteMenu,
+  setIsMobileMenuFriend,
+  setSelectedDeleteChat,
+} from "../../redux/reducers/misc";
 import { getSocket } from "../../socket";
 import ProfileCard from "../specific/ProfileCard";
+import DeleteChatMenu from "../dialogs/DeleteChatMenu";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
     const navigate = useNavigate();
     const chatId = params.chatId;
+    const deleteMenuAnchor = useRef(null);
 
     const socket = getSocket();
     // redux
@@ -36,9 +42,10 @@ const AppLayout = () => (WrappedComponent) => {
 
     useErrorHook([{ isError, error }]);
 
-    const handleDeleteChat = (e, _id, groupChat) => {
-      e.preventDefault();
-      console.log("delete chat", _id, groupChat);
+    const handleDeleteChat = (e, chatId, groupChat) => {
+      dispatch(setIsDeleteMenu(true));
+      dispatch(setSelectedDeleteChat({ chatId, groupChat }));
+      deleteMenuAnchor.current = e.currentTarget;
     };
 
     const handleMobileMenuFriendClose = () =>
@@ -80,6 +87,11 @@ const AppLayout = () => (WrappedComponent) => {
       <>
         <Title title="TalkWave" />
         <Header />
+        <DeleteChatMenu
+          dispatch={dispatch}
+          deleteOptinAnchor={deleteMenuAnchor.current}
+        />
+
         {isLoading ? (
           <Skeleton />
         ) : (
