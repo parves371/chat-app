@@ -28,6 +28,7 @@ const sentToken = (res, user, statusCode, message) => {
     res.status(statusCode).cookie("talkwave-token", token, cookieOptions).json({
       success: true,
       message,
+      user,
     });
   } catch (error) {
     res.status(500).json({

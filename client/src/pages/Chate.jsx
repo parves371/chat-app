@@ -148,8 +148,9 @@ const Chate = ({ chatId, user }) => {
   );
   const alertHandler = useCallback(
     (data) => {
+      if (data.chatId !== chatId) return; //
       const realTimeMessage = {
-        content: data,
+        content: data.message,
         sender: {
           _id: "dklsdmlsdla",
           name: "Admin",

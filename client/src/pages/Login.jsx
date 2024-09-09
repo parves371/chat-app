@@ -1,5 +1,7 @@
 import React from "react";
 
+import { useFileHandler, useInputValidation } from "6pp";
+import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import {
   Avatar,
   Button,
@@ -10,21 +12,21 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
-import { useFileHandler, useInputValidation, useStrongPassword } from "6pp";
 
 import { VisuallyHiddenInpute } from "../components/styles/StyledComponents";
-import { userNameValidation } from "../utils/validators";
 import { bgGradient } from "../constants/color";
+import { userNameValidation } from "../utils/validators";
 
 import axios from "axios";
-import { server } from "../constants/config";
-import { useDispatch } from "react-redux";
-import { userExists } from "../redux/reducers/auth";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { server } from "../constants/config";
+import { userExists } from "../redux/reducers/auth";
 
 const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const name = useInputValidation("", userNameValidation);
   const email = useInputValidation("");
   // useStrongPassword();
@@ -37,6 +39,9 @@ const Login = () => {
 
   const handleSingIn = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
+    const toastId = toast.loading("logging in...");
     const config = {
       withCredentials: true,
       headers: {
@@ -52,14 +57,21 @@ const Login = () => {
         },
         config
       );
-      dispatch(userExists(true));
-      toast.success(data.message);
+      dispatch(userExists(data.user));
+      toast.success(data.message, { id: toastId });
     } catch (error) {
-      toast.error(error?.response?.data?.message || "something went wrong");
+      toast.error(error?.response?.data?.message || "something went wrong", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
   const handleSingUp = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
+    const toastId = toast.loading("creating account...");
     const fromData = new FormData();
     fromData.append("avatar", avatar.file);
     fromData.append("name", name.value);
@@ -80,10 +92,14 @@ const Login = () => {
         fromData,
         config
       );
-      dispatch(userExists(true));
-      toast.success(data.message);
+      dispatch(userExists(data.user));
+      toast.success(data.message, { id: toastId });
     } catch (error) {
-      toast.error(error?.response?.data?.message || "something went wrong");
+      toast.error(error?.response?.data?.message || "something went wrong", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -152,6 +168,7 @@ const Login = () => {
                   type="submit"
                   fullWidth
                   onClick={handleSingIn}
+                  disabled={isLoading}
                 >
                   Login
                 </Button>
@@ -163,6 +180,7 @@ const Login = () => {
                   variant="text"
                   onClick={() => setIsLoggedIn(false)}
                   fullWidth
+                  disabled={isLoading}
                 >
                   sign up
                 </Button>
@@ -283,6 +301,7 @@ const Login = () => {
                   type="submit"
                   fullWidth
                   onClick={handleSingUp}
+                  disabled={isLoading}
                 >
                   sign up
                 </Button>
@@ -294,6 +313,7 @@ const Login = () => {
                   variant="text"
                   onClick={() => setIsLoggedIn(true)}
                   fullWidth
+                  disabled={isLoading}
                 >
                   login instead
                 </Button>
