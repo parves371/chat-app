@@ -10,6 +10,7 @@ import jwt from "jsonwebtoken";
 
 const adminLogin = tryCatch(async (req, res, next) => {
   const { secretkey } = req.body;
+
   const adminSecretKey = process.env.ADMIN_SECRET_KEY || "123456";
 
   const ismatched = secretkey === adminSecretKey;

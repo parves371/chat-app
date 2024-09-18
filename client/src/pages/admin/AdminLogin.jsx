@@ -3,13 +3,18 @@ import { Button, Container, Paper, TextField, Typography } from "@mui/material";
 import { bgGradient } from "../../constants/color";
 import { useInputValidation } from "6pp";
 import { Navigate } from "react-router-dom";
+import { adminLogin } from "../../redux/thunks/admin";
+import { useDispatch, useSelector } from "react-redux";
 
-const isAdmin = true;
 const AdminLogin = () => {
+  const { isAdmin } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
   const secretKey = useInputValidation("");
 
   const submiteHandler = (e) => {
     e.preventDefault();
+    dispatch(adminLogin(secretKey.value));
   };
   if (isAdmin) return <Navigate to={"/admin/dashboard"} />;
   return (
@@ -61,7 +66,7 @@ const AdminLogin = () => {
               color="primary"
               type="submit"
               fullWidth
-              onSubmit={submiteHandler}
+              onClick={submiteHandler}
             >
               Login
             </Button>

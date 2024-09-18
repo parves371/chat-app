@@ -15,9 +15,8 @@ const isAdmin = (req, _, next) => {
   const token = req.cookies["talkwave-admin"];
   if (!token) return next(new ErrorHandler("only admin can access", 401));
 
-  const secretkey = jwt.verify(token, process.env.JWT_SECRET);
-  const adminSecretKey =
-    process.env.ADMIN_SECRET_KEY || "ejfrhweruirfweqjgjhthuffjh";
+  const secretkey = jwt.verify(token, process.env.JWT_ADMIN_SECRET);
+  const adminSecretKey = process.env.ADMIN_SECRET_KEY || "123456";
 
   const ismatched = secretkey === adminSecretKey;
   if (!ismatched) return next(new ErrorHandler("Invalid admin key", 401));
