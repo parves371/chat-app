@@ -16,7 +16,7 @@ const adminLogin = tryCatch(async (req, res, next) => {
   const ismatched = secretkey === adminSecretKey;
   if (!ismatched) return next(new ErrorHandler("Invalid credentials", 401));
 
-  const token = jwt.sign(secretkey, process.env.JWT_SECRET);
+  const token = jwt.sign(secretkey, process.env.JWT_ADMIN_SECRET);
   res
     .status(200)
     .cookie("talkwave-admin", token, {
@@ -42,7 +42,7 @@ const adminLogout = tryCatch(async (req, res) => {
 });
 
 const getAdminData = tryCatch(async (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     admin: true,
   });
 });
