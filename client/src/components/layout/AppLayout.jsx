@@ -69,9 +69,7 @@ const AppLayout = () => (WrappedComponent) => {
     );
     const refetchHandler = useCallback(
       (data) => {
-        navigate("/");
         refetch();
-        console.log("refetch");
       },
       [refetch, navigate]
     );

@@ -1,7 +1,14 @@
 import React from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
 
-import { Box, Container, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Paper,
+  Skeleton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import {
   AdminPanelSettings as AdminPanelSettingsIcon,
   Group as GroupIcon,
@@ -18,7 +25,24 @@ import {
 import { matblack } from "../../constants/color";
 import { DoughnutCharts, LineCharts } from "../../components/specific/Charts";
 
+import { useFetchData } from "6pp";
+import { server } from "../../constants/config";
+import { useErrorHook } from "../../hooks/hook";
 const Dashboard = () => {
+  const { loading, data, error } = useFetchData(
+    `${server}/api/v1/admin/get-stats`,
+    "dashboard-stats"
+  );
+
+  const { stats } = data || {};
+
+  useErrorHook([
+    {
+      isError: error,
+      error: error,
+    },
+  ]);
+
   const appbar = (
     <Paper
       elevation={3}
@@ -53,12 +77,22 @@ const Dashboard = () => {
       margin={"2rem 0"}
       spacing={"2rem"}
     >
-      <Widget title="Users" value="100" icon={<PersonIcon />} />
-      <Widget title="Chats" value="50" icon={<GroupIcon />} />
-      <Widget title="Messages" value="35" icon={<MessageIcon />} />
+      <Widget title="Users" value={stats?.userscount} icon={<PersonIcon />} />
+      <Widget
+        title="Chats"
+        value={stats?.totalchatsCount}
+        icon={<GroupIcon />}
+      />
+      <Widget
+        title="Messages"
+        value={stats?.messagecount}
+        icon={<MessageIcon />}
+      />
     </Stack>
   );
-  return (
+  return loading ? (
+    <Skeleton />
+  ) : (
     <AdminLayout>
       <Container component={"main"}>
         {appbar}
@@ -81,7 +115,7 @@ const Dashboard = () => {
             <Typography margin={"2rem 0"} variant="h4">
               Last Massages
             </Typography>
-            <LineCharts value={[0, 120, 24, 14, 30]} />
+            <LineCharts value={stats?.messagesChart} />
           </Paper>
           <Paper
             elevation={3}
@@ -98,8 +132,11 @@ const Dashboard = () => {
             }}
           >
             <DoughnutCharts
-              labels={["Group Chats", "Single Chats"]}
-              value={[10, 20]}
+              labels={["Single Chats", "Group Chats"]}
+              value={[
+                stats?.totalchatsCount - stats?.groupscount || 0,
+                stats?.groupscount || 0,
+              ]}
             />
             <Stack
               position={"absolute"}
