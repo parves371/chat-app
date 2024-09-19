@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { adminLogin, getAdmin } from "../thunks/admin";
+import { adminLogin, adminLogout, getAdmin } from "../thunks/admin";
 import toast from "react-hot-toast";
 
 const initialState = {
@@ -39,6 +39,14 @@ const authSlice = createSlice({
       })
       .addCase(getAdmin.rejected, (state, action) => {
         state.isAdmin = false;
+      })
+      .addCase(adminLogout.fulfilled, (state, action) => {
+        state.isAdmin = false;
+        toast.success(action.payload);
+      })
+      .addCase(adminLogout.rejected, (state, action) => {
+        state.isAdmin = true;
+        toast.error(action.error.message);
       });
   },
 });

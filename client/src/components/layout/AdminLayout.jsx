@@ -20,7 +20,8 @@ import {
 import React, { useState } from "react";
 import { useLocation, Link as LinkComponent, Navigate } from "react-router-dom";
 import { matblack } from "../../constants/color";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { adminLogout } from "../../redux/thunks/admin";
 
 const Link = styled(LinkComponent)`
   text-decoration: none;
@@ -51,8 +52,9 @@ const adminTab = [
 ];
 const Sidebar = ({ w = "100%" }) => {
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  const logoutHandler = () => {};
+  const logoutHandler = () => dispatch(adminLogout());
 
   return (
     <Stack width={w} direction={"column"} p={"3rem"} spacing={"3rem"}>
