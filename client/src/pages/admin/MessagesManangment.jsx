@@ -3,9 +3,12 @@ import AdminLayout from "../../components/layout/AdminLayout";
 import Table from "../../components/shared/Table";
 import { fileTransform } from "../../lib/features";
 import moment from "moment";
-import { Avatar, Box, Stack } from "@mui/material";
+import { Avatar, Box, Skeleton, Stack } from "@mui/material";
 import { adminDashboardData } from "../../constants/sampleData";
 import RenderContant from "../../components/shared/RenderContent";
+import { server } from "../../constants/config";
+import { useFetchData } from "6pp";
+import { useErrorHook } from "../../hooks/hook";
 const columns = [
   {
     field: "id",
@@ -79,22 +82,43 @@ const columns = [
 ];
 const MessagesManangment = () => {
   const [rows, setRows] = React.useState([]);
+
+  const { loading, data, error } = useFetchData(
+    `${server}/api/v1/admin/get-messages`,
+    "dashboard-get-messages"
+  );
+
+  useErrorHook([
+    {
+      isError: error,
+      error: error,
+    },
+  ]);
+
+  console.log(data);
+
   useEffect(() => {
-    setRows(
-      adminDashboardData.messages.map((i) => ({
-        ...i,
-        id: i._id,
-        sender: {
-          name: i.sender.name,
-          avatar: fileTransform(i.sender.avatar, 50),
-        },
-        createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
-      }))
-    );
-  }, []);
+    if (data) {
+      setRows(
+        data?.messages.map((i) => ({
+          ...i,
+          id: i._id,
+          sender: {
+            name: i.sender.name,
+            avatar: fileTransform(i.sender.avatar, 50),
+          },
+          createdAt: moment(i.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
+        }))
+      );
+    }
+  }, [data]);
   return (
     <AdminLayout>
-      <Table heading={"All Messages"} columns={columns} row={rows} />
+      {loading ? (
+        <Skeleton />
+      ) : (
+        <Table heading={"All Messages"} columns={columns} row={rows} />
+      )}
     </AdminLayout>
   );
 };
