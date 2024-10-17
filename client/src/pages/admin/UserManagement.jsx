@@ -55,9 +55,6 @@ const UserManagement = () => {
     "dashboard-get-user"
   );
 
-  const { stats } = data || {};
-  console.log(data);
-
   useErrorHook([
     {
       isError: error,

@@ -5,6 +5,9 @@ import AvaterCard from "../../components/shared/AvaterCard";
 import { adminDashboardData } from "../../constants/sampleData";
 import { fileTransform } from "../../lib/features";
 import { Stack, Avatar } from "@mui/material";
+import { server } from "../../constants/config";
+import { useFetchData } from "6pp";
+import { useErrorHook } from "../../hooks/hook";
 const columns = [
   {
     field: "id",
@@ -62,23 +65,43 @@ const columns = [
 const ChatManagement = () => {
   const [rows, setRows] = useState([]);
 
+  const { loading, data, error } = useFetchData(
+    `${server}/api/v1/admin/get-chats`,
+    "dashboard-get-chats"
+  );
+
+  useErrorHook([
+    {
+      isError: error,
+      error: error,
+    },
+  ]);
+
   useEffect(() => {
-    setRows(
-      adminDashboardData.chats.map((i) => ({
-        ...i,
-        id: i._id,
-        avatar: i.avatar.map((j) => fileTransform(j, 50)),
-        members: i.members.map((j) => fileTransform(j.avatar, 50)),
-        creator: {
-          name: i.creator.name,
-          avatar: fileTransform(i.creator.avatar, 50),
-        },
-      }))
-    );
-  }, []);
+    if (data) {
+      setRows(
+        data?.chats.map((i) => ({
+          ...i,
+          id: i._id,
+          avatar: i.avatar.map((j) => fileTransform(j, 50)),
+          members: i.members.map((j) => fileTransform(j.avatar, 50)),
+          creator: {
+            name: i.creator.name,
+            avatar: fileTransform(i.creator.avatar, 50),
+          },
+        }))
+      );
+    }
+  }, [data]);
   return (
     <AdminLayout>
-      <Table heading={"All Chats"} columns={columns} row={rows} />
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div>
+          <Table heading={"All Chats"} columns={columns} row={rows} />
+        </div>
+      )}
     </AdminLayout>
   );
 };
