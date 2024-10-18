@@ -286,8 +286,6 @@ const renameGroup = tryCatch(async (req, res, next) => {
   const chatId = req.params.id;
   const { name } = req.body;
 
-  console.log(chatId, name);
-
   const chat = await Chat.findById(chatId);
   if (!chat) return next(new ErrorHandler("Chat not found", 404));
   if (!chat.groupChat)

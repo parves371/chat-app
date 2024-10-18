@@ -76,7 +76,6 @@ io.on("connection", (socket) => {
   const user = socket.user;
 
   userSocketIDs.set(user._id.toString(), socket.id);
-  // console.log(userSocketIDs);
 
   socket.on(NEW_MASSAGES, async ({ chatId, members, message }) => {
     const realTimeMessage = {
@@ -119,7 +118,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on(STOP_TYPING, ({ chatId, members }) => {
-    console.log("stop typing");
+    
     const membersSockets = getSockets(members);
     socket.to(membersSockets).emit(STOP_TYPING, { chatId });
   });

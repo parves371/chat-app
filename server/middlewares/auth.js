@@ -39,7 +39,6 @@ const isSocketAuthenticated = async (err, socket, next) => {
     socket.user = user;
     return next();
   } catch (error) {
-    console.log(error);
     next(new ErrorHandler("Not logged in", 401));
   }
 };
