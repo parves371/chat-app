@@ -1,13 +1,12 @@
+import { useFetchData } from "6pp";
+import { Avatar, Skeleton, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
-import Table from "../../components/shared/Table";
 import AvaterCard from "../../components/shared/AvaterCard";
-import { adminDashboardData } from "../../constants/sampleData";
-import { fileTransform } from "../../lib/features";
-import { Stack, Avatar } from "@mui/material";
+import Table from "../../components/shared/Table";
 import { server } from "../../constants/config";
-import { useFetchData } from "6pp";
 import { useErrorHook } from "../../hooks/hook";
+import { fileTransform } from "../../lib/features";
 const columns = [
   {
     field: "id",
@@ -96,7 +95,7 @@ const ChatManagement = () => {
   return (
     <AdminLayout>
       {loading ? (
-        <div>Loading...</div>
+        <Skeleton height={"100vh"} />
       ) : (
         <div>
           <Table heading={"All Chats"} columns={columns} row={rows} />

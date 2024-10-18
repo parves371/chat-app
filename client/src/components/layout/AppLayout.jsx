@@ -1,13 +1,18 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
 import Header from "./Header";
 
-import { Drawer, Grid, Skeleton } from "@mui/material";
+import { Drawer, Grid } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { FEFETCH_CHATS, NEW_MASSAGE, NEW_REQUEST } from "../../constants/event";
+import {
+  FEFETCH_CHATS,
+  NEW_MASSAGE,
+  NEW_REQUEST,
+  ONLINE_USERS,
+} from "../../constants/event";
 import { useErrorHook, useSocketEvents } from "../../hooks/hook";
 import { useMyChatsQuery } from "../../redux/api/api";
 import {
@@ -20,14 +25,16 @@ import {
   setSelectedDeleteChat,
 } from "../../redux/reducers/misc";
 import { getSocket } from "../../socket";
-import ProfileCard from "../specific/ProfileCard";
 import DeleteChatMenu from "../dialogs/DeleteChatMenu";
+import ProfileCard from "../specific/ProfileCard";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
     const navigate = useNavigate();
     const chatId = params.chatId;
     const deleteMenuAnchor = useRef(null);
+
+    const [onlineUsers, setOnLineUsers] = useState([]);
 
     const socket = getSocket();
     // redux
@@ -61,22 +68,29 @@ const AppLayout = () => (WrappedComponent) => {
       [chatId]
     );
 
+    const onLineUsersHandler = useCallback((data) => {
+      setOnLineUsers(data);
+    }, []);
+
     const newRequestHandler = useCallback(
       (data) => {
         dispatch(incrementNotificationsCount());
       },
       [dispatch]
     );
+
     const refetchHandler = useCallback(
       (data) => {
         refetch();
       },
       [refetch, navigate]
     );
+
     const eventArr = {
       [NEW_MASSAGE]: newMessagesAlertHandler, // alert for new message
       [NEW_REQUEST]: newRequestHandler, // alert for sent friend request and get new notification
       [FEFETCH_CHATS]: refetchHandler, // refetch chats
+      [ONLINE_USERS]: onLineUsersHandler, // online users
     };
 
     useSocketEvents(socket, eventArr);
@@ -90,9 +104,7 @@ const AppLayout = () => (WrappedComponent) => {
           deleteOptinAnchor={deleteMenuAnchor.current}
         />
 
-        {isLoading ? (
-          <Skeleton />
-        ) : (
+        {
           <Drawer
             open={isMobileMenuFriend}
             onClose={handleMobileMenuFriendClose}
@@ -103,9 +115,10 @@ const AppLayout = () => (WrappedComponent) => {
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
               newMassagesAlert={newMessagesAlert}
+              onlineUsers={onlineUsers}
             />
           </Drawer>
-        )}
+        }
         <Grid container height={"calc(100vh - 4rem)"}>
           <Grid
             item
@@ -114,16 +127,15 @@ const AppLayout = () => (WrappedComponent) => {
             sx={{ display: { sx: "none", sm: "block" } }}
             height={"100%"}
           >
-            {isLoading ? (
-              <Skeleton />
-            ) : (
+            {
               <ChatList
                 chats={data?.chats}
                 chatId={chatId}
                 handleDeleteChat={handleDeleteChat}
                 newMassagesAlert={newMessagesAlert}
+                onlineUsers={onlineUsers}
               />
-            )}
+            }
           </Grid>
           <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"}>
             <WrappedComponent {...props} chatId={chatId} user={user} />

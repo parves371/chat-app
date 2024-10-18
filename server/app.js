@@ -8,9 +8,12 @@ import { errrorMiddleware } from "./middlewares/error.js";
 import { connectDB } from "./utils/featurs.js";
 
 import {
+  CHAT_jOINED,
+  CHAT_lEAVED,
   FEFETCH_CHATS,
   NEW_MASSAGE,
   NEW_MASSAGES,
+  ONLINE_USERS,
   START_TYPING,
   STOP_TYPING,
 } from "./constants/event.js";
@@ -32,6 +35,7 @@ import userRoutes from "./routes/user.routes.js";
 const mongoUrI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
 const userSocketIDs = new Map();
+const onlineUsers = new Set();
 
 // connect to database
 connectDB(mongoUrI);
@@ -72,7 +76,7 @@ io.on("connection", (socket) => {
   const user = socket.user;
 
   userSocketIDs.set(user._id.toString(), socket.id);
-  console.log(userSocketIDs);
+  // console.log(userSocketIDs);
 
   socket.on(NEW_MASSAGES, async ({ chatId, members, message }) => {
     const realTimeMessage = {
@@ -118,6 +122,20 @@ io.on("connection", (socket) => {
     console.log("stop typing");
     const membersSockets = getSockets(members);
     socket.to(membersSockets).emit(STOP_TYPING, { chatId });
+  });
+
+  socket.on(CHAT_jOINED, async ({ userId, members }) => {
+    onlineUsers.add(userId.toString());
+
+    const membersSockets = getSockets(members);
+    io.to(membersSockets).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+
+  socket.on(CHAT_lEAVED, async ({ userId, members }) => {
+    onlineUsers.delete(userId.toString());
+
+    const membersSockets = getSockets(members);
+    io.to(membersSockets).emit(ONLINE_USERS, Array.from(onlineUsers));
   });
 
   socket.on("disconnect", () => {

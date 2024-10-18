@@ -10,13 +10,13 @@ import {
 } from "@mui/material";
 import React, { memo } from "react";
 
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useAcceptFriendRequestMutation,
   useGetNotificationsQuery,
 } from "../../redux/api/api";
-import { useDispatch, useSelector } from "react-redux";
 import { setIsNotification } from "../../redux/reducers/misc";
-import toast from "react-hot-toast";
 
 const Notifications = () => {
   const { isNotification } = useSelector((state) => state.misc);
@@ -33,7 +33,6 @@ const Notifications = () => {
       });
 
       if (res.data?.success) {
-        console.log("user socket");
         toast.success(res?.data?.message || "Friend request accepted");
         dispatch(setIsNotification(false));
       } else {
@@ -41,7 +40,6 @@ const Notifications = () => {
       }
     } catch (error) {
       toast.error("something went wrong");
-      console.log(error);
     }
   };
   const closeNotificationHandler = () => dispatch(setIsNotification(false));

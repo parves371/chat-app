@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { TypingLoader } from "../components/layout/Loaders";
 import {
   ALERT,
+  CHAT_jOINED,
+  CHAT_lEAVED,
   NEW_MASSAGES,
   START_TYPING,
   STOP_TYPING,
@@ -105,12 +107,14 @@ const Chate = ({ chatId, user }) => {
   };
 
   useEffect(() => {
+    socket.emit(CHAT_jOINED, { userId: user._id, members });
     dispatch(removeNewMessageAlert(chatId));
     return () => {
       setMessages([]);
       setOldMessages([]);
       setMessage("");
       setPage(1);
+      socket.emit(CHAT_lEAVED, { userId: user._id, members });
     };
   }, [chatId]);
 
@@ -123,8 +127,10 @@ const Chate = ({ chatId, user }) => {
   }, [messages]);
 
   useEffect(() => {
-    if (!chatDetails?.data?.chat) return navigate("/");
+    // if (!chatDetails?.data?.chat) return navigate("/");
   }, [chatDetails.data]);
+
+  
   const newMessagesHandler = useCallback(
     (data) => {
       if (data.chatId !== chatId) return; //

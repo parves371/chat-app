@@ -1,12 +1,11 @@
+import { useFetchData } from "6pp";
+import { Avatar, Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import Table from "../../components/shared/Table";
-import { Avatar, Skeleton } from "@mui/material";
-import { adminDashboardData } from "../../constants/sampleData";
-import { fileTransform } from "../../lib/features";
-import { useFetchData } from "6pp";
 import { server } from "../../constants/config";
 import { useErrorHook } from "../../hooks/hook";
+import { fileTransform } from "../../lib/features";
 
 const columns = [
   {
@@ -78,7 +77,7 @@ const UserManagement = () => {
   return (
     <AdminLayout>
       {loading ? (
-        <Skeleton />
+        <Skeleton  height={"100vh"}/>
       ) : (
         <div>
           <Table heading={"All Users"} columns={columns} row={rows} />

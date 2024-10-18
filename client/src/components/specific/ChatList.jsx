@@ -7,7 +7,7 @@ const ChatList = ({
   w = "100%",
   chats = [],
   chatId,
-  onlineUsers = [],
+  onlineUsers,
   newMassagesAlert = [
     {
       chatId: "",
@@ -22,6 +22,7 @@ const ChatList = ({
       direction={"column"}
       sx={{ overflowY: "auto" }}
       height={"100%"}
+      zIndex={100}
     >
       {chats?.map((chat, index) => {
         const { _id, name, avatar, members, groupChat } = chat;
@@ -30,7 +31,10 @@ const ChatList = ({
           ({ chatId }) => chatId === _id
         );
 
-        const isOnline = members?.some((member) => onlineUsers.includes(_id));
+        const isOnline = members?.some((member) =>
+          onlineUsers.includes(member._id)
+        );
+
         return (
           <Chatitem
             index={index}

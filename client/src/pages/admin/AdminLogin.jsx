@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
-import { Button, Container, Paper, TextField, Typography } from "@mui/material";
-import { bgGradient } from "../../constants/color";
 import { useInputValidation } from "6pp";
-import { Navigate } from "react-router-dom";
-import { adminLogin, getAdmin } from "../../redux/thunks/admin";
+import { Button, Container, Paper, TextField, Typography } from "@mui/material";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
+import { bgGradient } from "../../constants/color";
+import { adminLogin, getAdmin } from "../../redux/thunks/admin";
 
 const AdminLogin = () => {
   const { isAdmin } = useSelector((state) => state.auth);

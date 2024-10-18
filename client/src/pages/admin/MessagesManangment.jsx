@@ -1,14 +1,13 @@
+import { useFetchData } from "6pp";
+import { Avatar, Box, Skeleton, Stack } from "@mui/material";
+import moment from "moment";
 import React, { useEffect } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
-import Table from "../../components/shared/Table";
-import { fileTransform } from "../../lib/features";
-import moment from "moment";
-import { Avatar, Box, Skeleton, Stack } from "@mui/material";
-import { adminDashboardData } from "../../constants/sampleData";
 import RenderContant from "../../components/shared/RenderContent";
+import Table from "../../components/shared/Table";
 import { server } from "../../constants/config";
-import { useFetchData } from "6pp";
 import { useErrorHook } from "../../hooks/hook";
+import { fileTransform } from "../../lib/features";
 const columns = [
   {
     field: "id",
@@ -95,8 +94,6 @@ const MessagesManangment = () => {
     },
   ]);
 
-  console.log(data);
-
   useEffect(() => {
     if (data) {
       setRows(
@@ -115,7 +112,7 @@ const MessagesManangment = () => {
   return (
     <AdminLayout>
       {loading ? (
-        <Skeleton />
+        <Skeleton height={"100vh"} />
       ) : (
         <Table heading={"All Messages"} columns={columns} row={rows} />
       )}

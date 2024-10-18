@@ -15,11 +15,16 @@ const Chatitem = ({
   index = 0,
   handleDeleteChat,
 }) => {
+  const handleContextMenu = (e) => {
+    e.preventDefault(); // Prevent the default context menu
+    handleDeleteChat(e, _id, groupChat); // Call the delete function
+  };
+
   return (
     <Link
       sx={{ padding: "0" }}
       to={`/chat/${_id}`}
-      onContextMenu={(e) => handleDeleteChat(e, _id, groupChat)}
+      onContextMenu={handleContextMenu} // Use the context menu handler
     >
       <div
         style={{
