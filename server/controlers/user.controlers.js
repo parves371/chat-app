@@ -172,6 +172,10 @@ const acceptFriendRequest = tryCatch(async (req, res, next) => {
   });
 });
 
+
+
+
+
 const getMyNotifications = tryCatch(async (req, res) => {
   const requests = await Request.find({ receiver: req.user }).populate(
     "sender",
