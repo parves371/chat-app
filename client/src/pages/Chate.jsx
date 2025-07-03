@@ -241,3 +241,11 @@ const Chate = ({ chatId, user }) => {
 };
 
 export default AppLayout()(Chate);
+
+
+
+
+
+
+
+
